@@ -161,15 +161,15 @@ def main():
     data=csv_bytes,
     file_name="filtered_compensation.csv",
     mime="text/csv",
-)
+   )
 
 excel_bytes = convert_df_to_excel(filtered_df)
     st.download_button(
     label="⬇️ Завантажити Excel",
     data=excel_bytes,
     file_name="filtered_compensation.xlsx",
-    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-)
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
 
 
     # ---- ФУТЕР ----
