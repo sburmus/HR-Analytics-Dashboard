@@ -2,17 +2,19 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# === Константи ===
+# === КОНСТАНТИ ===
 BENEFIT_COSTS = {
     "health_insurance": 5000,
     "sport": 2000,
     "remote_allowance": 3000,
 }
 
-# === Функції ===
+
+# === ДОПОМІЖНІ ФУНКЦІЇ ===
 def add_total_compensation(df: pd.DataFrame) -> pd.DataFrame:
+    """Додає стовпець total_compensation з урахуванням пільг."""
     df = df.copy()
-    # про всяк випадок переконаємось, що це числа (0/1 або 0/1.0)
+    # гарантуємо числові значення 0/1
     for col in ["health_insurance", "sport", "remote_allowance"]:
         df[col] = df[col].astype(float)
 
@@ -25,11 +27,13 @@ def add_total_compensation(df: pd.DataFrame) -> pd.DataFrame:
     )
     return df
 
+
 def convert_df_to_csv(df: pd.DataFrame) -> bytes:
+    """Повертає CSV байти для завантаження."""
     return df.to_csv(index=False).encode("utf-8")
 
 
-# === Основна логіка ===
+# === ГОЛОВНА ФУНКЦІЯ ===
 def main():
     st.set_page_config(
         page_title="HR Analytics – Compensation & Benefits",
@@ -37,17 +41,26 @@ def main():
         layout="wide",
     )
 
-    # ---- Стилі для заголовків ----
+    # ---- ЗАГАЛЬНІ СТИЛІ (збільшуємо шрифт) ----
     st.markdown(
         """
         <style>
+        html, body, [class*="css"] {
+            font-size: 18px;
+        }
+        .stMetric label, .stMetric span {
+            font-size: 18px !important;
+        }
+        .stDataFrame, .stTable {
+            font-size: 16px !important;
+        }
         .main-title {
-            font-size: 32px;
+            font-size: 34px;
             font-weight: 700;
             margin-bottom: 0px;
         }
         .sub-title {
-            font-size: 18px;
+            font-size: 20px;
             color: #555;
             margin-top: 0px;
             margin-bottom: 20px;
@@ -57,32 +70,36 @@ def main():
         unsafe_allow_html=True,
     )
 
-    # ---- Шапка сторінки ----
-    st.markdown('<p class="main-title">HR Analytics – Аналіз компенсацій і пільг</p>', unsafe_allow_html=True)
+    # ---- ШАПКА СТОРІНКИ ----
     st.markdown(
-        '<p class="sub-title">Умовна компанія Adidas Ukraine • 200+ співробітників • Дані згенеровані для навчальних цілей</p>',
+        '<p class="main-title">HR Analytics – Аналіз компенсацій і пільг</p>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<p class="sub-title">Умовна компанія Adidas Ukraine • змодельована база співробітників</p>',
         unsafe_allow_html=True,
     )
 
     st.markdown("### Опис проєкту")
     st.write(
         "Дашборд показує структуру компенсаційних пакетів співробітників: "
-        "базовий оклад, бонуси та пільги (медичне страхування, спортзал, компенсація віддаленої роботи). "
-        "Користувач може фільтрувати дані за відділами, рівнем зарплати й наявністю пільг, "
-        "а також отримувати узагальнені показники, графіки та детальні таблиці."
+        "базову заробітну плату, бонуси та пільги (медичне страхування, спортзал, "
+        "компенсацію віддаленої роботи). Користувач може фільтрувати дані за відділами, "
+        "діапазоном окладів і наявністю пільг, отримуючи агреговані показники, графіки "
+        "та детальні таблиці."
     )
 
     st.markdown("---")
 
-    # ---- Завантаження даних ----
+    # ---- ЗАВАНТАЖЕННЯ ДАНИХ ----
     df = pd.read_csv("compensation.csv")
     df = add_total_compensation(df)
 
-    # ---- Фільтри (sidebar) ----
-    st.sidebar.header("🔎 Фільтри")
+    # ---- SIDEBAR: ФІЛЬТРИ ----
+    st.sidebar.title("🔎 Панель фільтрів")
 
     departments = st.sidebar.multiselect(
-        "Виберіть відділи:",
+        "Відділи:",
         options=sorted(df["department"].unique()),
         default=None,
     )
@@ -91,18 +108,18 @@ def main():
     salary_max = int(df["base_salary"].max())
     salary_range = st.sidebar.slider(
         "Діапазон базової зарплати:",
-        salary_min,
-        salary_max,
-        (salary_min, salary_max),
+        min_value=salary_min,
+        max_value=salary_max,
+        value=(salary_min, salary_max),
         step=1000,
     )
 
     st.sidebar.markdown("**Пільги:**")
     only_health = st.sidebar.checkbox("Тільки з медстрахуванням")
-    only_sport = st.sidebar.checkbox("Тільки зі спортом")
+    only_sport = st.sidebar.checkbox("Тільки зі спортивною пільгою")
     only_remote = st.sidebar.checkbox("Тільки з remote allowance")
 
-    # ---- Фільтрація даних ----
+    # ---- ЗАСТОСУВАННЯ ФІЛЬТРІВ ----
     filtered_df = df.copy()
 
     if departments:
@@ -121,11 +138,15 @@ def main():
         filtered_df = filtered_df[filtered_df["remote_allowance"] == 1]
 
     if filtered_df.empty:
-        st.warning("За обраними фільтрами немає жодного співробітника. Змініть умови фільтрації.")
-        return  # далі немає сенсу нічого будувати
+        st.warning(
+            "За обраними фільтрами немає жодного співробітника. "
+            "Послабте умови фільтрації."
+        )
+        return
 
-    # ---- Блок метрик ----
+    # ---- КЛЮЧОВІ ПОКАЗНИКИ ----
     st.markdown("### 📊 Ключові показники (з урахуванням фільтрів)")
+
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Кількість співробітників", len(filtered_df))
     col2.metric(
@@ -143,7 +164,7 @@ def main():
 
     st.markdown("---")
 
-    # ---- Графік 1: середня компенсація по відділах ----
+    # ---- ГРАФІКИ ПО ВІДДІЛАХ ----
     st.markdown("### 🏢 Середня компенсація по відділах")
 
     dept_comp = (
@@ -152,28 +173,28 @@ def main():
         .reset_index()
     )
 
-    fig1 = px.bar(
+    fig_salary_bonus = px.bar(
         dept_comp,
         x="department",
         y=["base_salary", "bonus"],
         barmode="group",
         title="Середня базова зарплата та бонус по відділах",
-        labels={"value": "Сума, грн", "department": "Відділ"},
+        labels={"value": "Сума, грн", "department": "Відділ", "variable": "Компонент"},
     )
-    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig_salary_bonus, use_container_width=True)
 
-    fig2 = px.bar(
+    fig_total = px.bar(
         dept_comp,
         x="department",
         y="total_compensation",
         title="Середній повний компенсаційний пакет по відділах",
         labels={"total_compensation": "Сума, грн", "department": "Відділ"},
     )
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig_total, use_container_width=True)
 
     st.markdown("---")
 
-    # ---- Графік 2: розподіл пільг ----
+    # ---- ПІЛЬГИ ----
     st.markdown("### 🎁 Розподіл пільг серед співробітників")
 
     benefits_count = {
@@ -185,28 +206,32 @@ def main():
         list(benefits_count.items()), columns=["Пільга", "Кількість"]
     )
 
-    col_pie, col_table = st.columns(2)
+    col_pie, col_tbl = st.columns(2)
     with col_pie:
-        fig3 = px.pie(
+        fig_benefits = px.pie(
             benefits_df,
             names="Пільга",
             values="Кількість",
             title="Частка співробітників із різними пільгами",
         )
-        st.plotly_chart(fig3, use_container_width=True)
+        st.plotly_chart(fig_benefits, use_container_width=True)
 
-    with col_table:
+    with col_tbl:
         st.write("Табличний вигляд розподілу пільг:")
         st.dataframe(benefits_df, use_container_width=True)
 
     st.markdown("---")
 
-    # ---- Таблиці: топ і деталі ----
-    st.markdown("### 🏆 Топ співробітників за повним пакетом")
+    # ---- ТОП СПІВРОБІТНИКІВ ----
+    st.markdown("### 🏆 ТОП співробітників за повністю пакетом")
 
     top_n = st.slider(
-        "Скільки показати у ТОП‑списку:", 3, min(50, len(filtered_df)), 10
+        "Кількість у ТОП‑списку:",
+        min_value=3,
+        max_value=min(50, len(filtered_df)),
+        value=10,
     )
+
     top_df = (
         filtered_df.sort_values("total_compensation", ascending=False)
         .head(top_n)[
@@ -224,42 +249,45 @@ def main():
     )
     st.dataframe(top_df, use_container_width=True)
 
+    # ---- ДЕТАЛЬНА ТАБЛИЦЯ ----
     st.markdown("### 📋 Детальна таблиця співробітників (з урахуванням фільтрів)")
-    st.dataframe(
-        filtered_df[
-            [
-                "name",
-                "department",
-                "base_salary",
-                "bonus",
-                "health_insurance",
-                "sport",
-                "remote_allowance",
-                "total_compensation",
-            ]
-        ].sort_values("name"),
-        use_container_width=True,
-    )
+
+    details_df = filtered_df[
+        [
+            "name",
+            "department",
+            "base_salary",
+            "bonus",
+            "health_insurance",
+            "sport",
+            "remote_allowance",
+            "total_compensation",
+        ]
+    ].sort_values("name")
+
+    st.dataframe(details_df, use_container_width=True)
 
     st.markdown("---")
 
-    # ---- Експорт ----
+    # ---- ЕКСПОРТ ----
     st.markdown("### 📤 Експорт відфільтрованих даних")
-    csv = convert_df_to_csv(filtered_df)
+
+    csv_bytes = convert_df_to_csv(filtered_df)
     st.download_button(
-        "⬇️ Завантажити CSV",
-        data=csv,
+        label="⬇️ Завантажити CSV",
+        data=csv_bytes,
         file_name="filtered_compensation.csv",
         mime="text/csv",
     )
 
-    # ---- Футер ----
+    # ---- ФУТЕР ----
     st.markdown(
-        "<br><hr><small>Проєкт: аналіз компенсацій і пільг співробітників в умовній компанії Adidas Ukraine. "
-        "Усі дані є змодельованими для навчальних цілей.</small>",
+        "<br><hr><small>Проєкт: аналіз компенсацій і пільг співробітників "
+        "в умовній компанії Adidas Ukraine. Усі дані є змодельованими для навчальних цілей.</small>",
         unsafe_allow_html=True,
     )
 
 
 if __name__ == "__main__":
     main()
+
