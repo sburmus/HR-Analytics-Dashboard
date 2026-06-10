@@ -152,25 +152,27 @@ def main():
     details_df = filtered_df[["name","department","base_salary","bonus","health_insurance","sport","remote_allowance","total_compensation"]].sort_values("name")
 
 
+    st.dataframe(details_df, width="stretch")
     # ---- ЕКСПОРТ ----
     st.markdown("### 📤 Експорт")
 
     csv_bytes = convert_df_to_csv(filtered_df)
     st.download_button(
-    label="⬇️ Завантажити CSV (Excel-friendly)",
-    data=csv_bytes,
-    file_name="filtered_compensation.csv",
-    mime="text/csv",
-   )
-
-excel_bytes = convert_df_to_excel(filtered_df)
-    st.download_button(
-    label="⬇️ Завантажити Excel",
-    data=excel_bytes,
-    file_name="filtered_compensation.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        label="⬇️ Завантажити CSV (Excel-friendly)",
+        data=csv_bytes,
+        file_name="filtered_compensation.csv",
+        mime="text/csv",
+        key="download_csv"
     )
 
+    excel_bytes = convert_df_to_excel(filtered_df)
+    st.download_button(
+        label="⬇️ Завантажити Excel",
+        data=excel_bytes,
+        file_name="filtered_compensation.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        key="download_excel"
+    )
 
     # ---- ФУТЕР ----
     st.markdown(
