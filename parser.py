@@ -1,63 +1,85 @@
 import requests
-from bs4 import BeautifulSoup
 import pandas as pd
+from bs4 import BeautifulSoup
 
-# --- Work.ua ---
-def parse_workua(role: str, pages: int = 1) -> pd.DataFrame:
-    results = []
-    for page in range(1, pages+1):
-        url = f"https://www.work.ua/jobs-{role}/?page={page}"
-        r = requests.get(url)
-        soup = BeautifulSoup(r.text, "html.parser")
+# === Словник посад з похідними назвами ===
+ROLE_SYNONYMS = {
+    "Маркетолог": ["Маркетолог", "Маркетинг-менеджер", "Менеджер з маркетингу"],
+    "Менеджер з продажу": ["Менеджер з продажу", "Sales Manager", "Торговий представник"],
+    "Логіст": ["Логіст", "Менеджер з логістики", "Logistics Specialist"],
+    "HR-менеджер": ["HR-менеджер", "Менеджер з персоналу", "Кадровик", "HR Specialist"],
+    "Програміст": ["Програміст", "Розробник", "Software Engineer", "Developer"],
+    "Бухгалтер": ["Бухгалтер", "Accountant", "Фінансовий спеціаліст"],
+    "Аналітик": ["Аналітик", "Data Analyst", "Business Analyst"],
+    "Дизайнер": ["Дизайнер", "UI/UX Designer", "Графічний дизайнер"],
+    "Тестувальник": ["Тестувальник", "QA Engineer", "Quality Assurance"],
+}
 
-        jobs = soup.select("div.job-link")
-        for job in jobs:
-            title = job.select_one("h2 a").text.strip()
-            salary_tag = job.select_one("div.add-top-xs span")
-            salary = salary_tag.text.strip() if salary_tag else "Не вказано"
-            results.append({"Role": role, "Salary": salary, "Source": "Work.ua"})
-    return pd.DataFrame(results)
+# === Словник міст та областей ===
+CITY_SYNONYMS = {
+    "Київ": ["Київ", "м. Київ", "Київська область"],
+    "Львів": ["Львів", "м. Львів", "Львівська область"],
+    "Полтава": ["Полтава", "м. Полтава", "Полтавська область"],
+    "Одеса": ["Одеса", "м. Одеса", "Одеська область"],
+    "Харків": ["Харків", "м. Харків", "Харківська область"],
+    "Дніпро": ["Дніпро", "м. Дніпро", "Дніпропетровська область"],
+    "Запоріжжя": ["Запоріжжя", "м. Запоріжжя", "Запорізька область"],
+    "Чернігів": ["Чернігів", "м. Чернігів", "Чернігівська область"],
+    "Черкаси": ["Черкаси", "м. Черкаси", "Черкаська область"],
+    "Вінниця": ["Вінниця", "м. Вінниця", "Вінницька область"],
+    "Житомир": ["Житомир", "м. Житомир", "Житомирська область"],
+    "Миколаїв": ["Миколаїв", "м. Миколаїв", "Миколаївська область"],
+    "Херсон": ["Херсон", "м. Херсон", "Херсонська область"],
+    "Суми": ["Суми", "м. Суми", "Сумська область"],
+    "Рівне": ["Рівне", "м. Рівне", "Рівненська область"],
+    "Тернопіль": ["Тернопіль", "м. Тернопіль", "Тернопільська область"],
+    "Івано-Франківськ": ["Івано-Франківськ", "м. Івано-Франківськ", "Івано-Франківська область"],
+    "Ужгород": ["Ужгород", "м. Ужгород", "Закарпатська область"],
+    "Луцьк": ["Луцьк", "м. Луцьк", "Волинська область"],
+    "Чернівці": ["Чернівці", "м. Чернівці", "Чернівецька область"],
+    "Кропивницький": ["Кропивницький", "м. Кропивницький", "Кіровоградська область"],
+}
 
-# --- Rabota.ua ---
-def parse_rabotaua(role: str, pages: int = 1) -> pd.DataFrame:
-    results = []
-    for page in range(1, pages+1):
-        url = f"https://rabota.ua/zapros/{role}/pg{page}"
-        r = requests.get(url)
-        soup = BeautifulSoup(r.text, "html.parser")
+# === Основна функція парсера ===
+def get_market_data(role_ua: str, city: str = None) -> pd.DataFrame:
+    """
+    Отримує ринкові дані по зарплатах з Work.ua/stat.
+    role_ua: назва посади українською
+    city: місто або область
+    """
 
-        jobs = soup.select("div.card-body")
-        for job in jobs:
-            title = job.select_one("h2 a").text.strip()
-            salary_tag = job.select_one("p.salary")
-            salary = salary_tag.text.strip() if salary_tag else "Не вказано"
-            results.append({"Role": role, "Salary": salary, "Source": "Rabota.ua"})
-    return pd.DataFrame(results)
+    synonyms = ROLE_SYNONYMS.get(role_ua, [role_ua])
+    city_variants = CITY_SYNONYMS.get(city, [city]) if city else [None]
 
-# --- Djinni.co ---
-def parse_djinni(role: str, pages: int = 1) -> pd.DataFrame:
-    results = []
-    for page in range(1, pages+1):
-        url = f"https://djinni.co/jobs/?keywords={role}&page={page}"
-        r = requests.get(url)
-        soup = BeautifulSoup(r.text, "html.parser")
+    data = []
 
-        jobs = soup.select("div.list-jobs__item")
-        for job in jobs:
-            title = job.select_one("div.list-jobs__title a").text.strip()
-            salary_tag = job.select_one("span.public-salary-item")
-            salary = salary_tag.text.strip() if salary_tag else "Не вказано"
-            results.append({"Role": role, "Salary": salary, "Source": "Djinni"})
-    return pd.DataFrame(results)
+    try:
+        url = "https://work.ua/stat/"
+        response = requests.get(url, timeout=10)
+        soup = BeautifulSoup(response.text, "html.parser")
 
-# --- LinkedIn Jobs (спрощено через пошук) ---
-def parse_linkedin(role: str) -> pd.DataFrame:
-    # LinkedIn має захист, тому тут краще використовувати API або Selenium
-    # Для прикладу зробимо "заглушку"
-    results = [
-        {"Role": role, "Salary": "Не вказано", "Source": "LinkedIn Jobs"}
-    ]
-    return pd.DataFrame(results)
+        tables = soup.find_all("table")
+        for table in tables:
+            rows = table.find_all("tr")
+            for row in rows[1:]:
+                cols = [c.get_text(strip=True) for c in row.find_all("td")]
+                if len(cols) >= 2:
+                    city_name, salary = cols[0], cols[1]
+                    # перевіряємо всі варіанти міста/області
+                    if any(city_name.lower() == variant.lower() for variant in city_variants if variant):
+                        for synonym in synonyms:
+                            data.append({
+                                "Role_ua": synonym,
+                                "City": city_name,
+                                "Salary": salary if salary else "Не вказано",
+                                "Source": "Work.ua"
+                            })
+    except Exception:
+        data.append({
+            "Role_ua": role_ua,
+            "City": city if city else "—",
+            "Salary": "Не вказано",
+            "Source": "Work.ua (error)"
+        })
 
-# --- Об’єднання всіх джерел ---
-def get_market_data
+    return pd.DataFrame(data, columns=["Role_ua", "City", "Salary", "Source"])
