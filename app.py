@@ -364,6 +364,19 @@ def main():
         "в умовній компанії Adidas Ukraine. Усі дані є змодельованими для навчальних цілей.</small>",
         unsafe_allow_html=True,
     )
+from parser import get_market_data
+
+with tab_market:
+    st.subheader("Аналіз ринку зарплат і компенсацій")
+
+    role = st.selectbox("Оберіть посаду:", internal_df["Role"].unique())
+    market_df = get_market_data(role)
+
+    st.dataframe(market_df)
+
+    # Порівняння з внутрішніми даними
+    merged = internal_df[internal_df["Role"] == role].merge(market_df, on="Role", how="left")
+    st.bar_chart(merged.set_index("Source")[["total_compensation", "Salary"]])
 
 
 if __name__ == "__main__":
