@@ -32,7 +32,10 @@ def add_total_compensation(df: pd.DataFrame) -> pd.DataFrame:
 internal_df = pd.read_csv("compensation.csv")
 internal_df = add_total_compensation(internal_df)
 
-market_df = pd.read_csv("market_data.csv")  # файл з ринковими даними
+from parser import get_market_data
+
+role = st.selectbox("Оберіть посаду:", internal_df["Role"].unique())
+market_df = get_market_data(role)
 
 # === ВКЛАДКИ ===
 tab1, tab2, tab3, tab4, tab5, tab_market = st.tabs([
