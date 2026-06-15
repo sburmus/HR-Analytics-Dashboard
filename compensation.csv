@@ -1,201 +1,201 @@
-id,name,department,base_salary,bonus,health_insurance,sport,remote_allowance
-1,Igor Sobol,Logistics,38000,2137,1,1,0
-2,Oleksii Kutsenko,Sales,53000,8240,1,1,0
-3,Halyna Kovalenko,Marketing,60000,12748,1,1,1
-4,Olha Koval,Marketing,60000,9339,1,1,0
-5,Andriana Sobol,HR,38000,5310,1,1,1
-6,Lesia Boyko,Sales,47000,3275,1,0,0
-7,Oksana Oliinyk,Marketing,60000,4043,1,0,0
-8,Denys Levchenko,Sales,47000,5616,1,1,0
-9,Andriana Savchenko,Logistics,55000,3731,1,0,0
-10,Anna Oliinyk,Retail,38000,8437,1,1,0
-11,Viktor Holub,Sales,60000,7731,1,1,0
-12,Andrii Marchenko,Marketing,58000,10138,0,0,1
-13,Lesia Oliinyk,Logistics,52000,9606,0,1,0
-14,Iryna Klymenko,Marketing,54000,9362,0,0,1
-15,Stepan Kovalenko,IT,54000,7894,1,1,1
-16,Olha Rudenko,Logistics,38000,8376,1,1,0
-17,Olena Polishchuk,HR,40000,6537,0,0,1
-18,Andrii Zhuk,IT,56000,14987,1,0,0
-19,Oleksa Petrenko,Marketing,55000,15860,0,0,1
-20,Viktor Boyko,Sales,46000,12405,0,1,1
-21,Andrii Danyliuk,Sales,37000,8620,0,0,0
-22,Denys Sobol,Logistics,50000,14335,1,0,0
-23,Viktor Vasylenko,Logistics,41000,9357,1,0,0
-24,Svitlana Oliinyk,HR,38000,4255,1,1,1
-25,Volodymyr Melnyk,Sales,37000,8397,1,1,1
-26,Viktor Boyko,IT,65000,7775,1,0,0
-27,Igor Klymenko,IT,80000,8859,1,1,1
-28,Petro Romaniuk,Retail,34000,5194,0,1,0
-29,Stepan Karpov,Sales,47000,10906,0,1,1
-30,Halyna Kutsenko,Marketing,51000,4889,1,0,1
-31,Oleksandr Marchenko,Sales,36000,7669,1,1,1
-32,Mykhailo Kovalenko,Marketing,51000,8741,1,1,1
-33,Mariana Kutsenko,HR,43000,12110,0,1,0
-34,Stepan Sydorenko,Logistics,50000,4434,1,0,0
-35,Iryna Sydorenko,Logistics,45000,2893,1,0,0
-36,Mykhailo Bondar,IT,55000,14455,1,1,0
-37,Svitlana Vasylenko,IT,65000,12657,1,1,0
-38,Igor Shapoval,Retail,32000,3234,0,1,0
-39,Svitlana Romaniuk,HR,45000,12701,0,1,0
-40,Viktor Marchenko,Sales,52000,5371,1,0,0
-41,Halyna Vasylenko,Retail,32000,2861,0,0,0
-42,Andrii Chernenko,Sales,56000,14239,1,0,0
-43,Volodymyr Kravets,Sales,38000,8952,1,1,0
-44,Anna Koval,Logistics,55000,14477,1,1,0
-45,Serhii Horbenko,Logistics,48000,12352,1,1,1
-46,Viktor Tkachenko,Logistics,49000,9208,1,1,1
-47,Natalia Zhuk,IT,52000,13449,1,1,1
-48,Viktor Pavlenko,Sales,46000,4715,1,1,0
-49,Iryna Pavlenko,IT,59000,16605,1,1,0
-50,Oksana Marchenko,Sales,40000,9365,1,0,0
-51,Kateryna Ivanov,Retail,30000,7405,1,0,0
-52,Denys Dmytrenko,HR,46000,5809,0,1,1
-53,Mykhailo Sobol,Retail,32000,8514,0,1,0
-54,Serhii Shevchuk,Retail,28000,2207,0,1,0
-55,Olena Bondar,Sales,54000,8566,0,1,0
-56,Halyna Sobol,HR,53000,5168,1,1,1
-57,Volodymyr Bondar,Logistics,41000,5783,1,0,0
-58,Stepan Danyliuk,Logistics,44000,7778,1,1,0
-59,Svitlana Shapoval,Marketing,51000,11027,1,0,1
-60,Inna Holub,HR,52000,13438,1,1,0
-61,Halyna Horbenko,HR,49000,7866,1,1,0
-62,Oleksandr Marchenko,Logistics,37000,4475,1,0,1
-63,Oleksa Melnyk,Logistics,44000,4671,1,1,0
-64,Mykhailo Marchenko,HR,48000,13033,1,0,1
-65,Oleksandr Klymenko,Marketing,58000,12870,0,0,0
-66,Lidiia Bondar,Marketing,43000,10794,1,1,1
-67,Oleksandr Karpov,HR,39000,9763,1,0,1
-68,Oksana Hrytsenko,IT,82000,12848,0,1,1
-69,Oleksa Marchenko,HR,43000,10231,0,1,0
-70,Stepan Koval,Retail,35000,2427,1,1,0
-71,Yuliia Moroz,Marketing,42000,4528,1,0,1
-72,Svitlana Petrenko,IT,79000,12161,1,1,0
-73,Viktor Pavlenko,IT,74000,12524,0,1,1
-74,Oleksa Petrenko,IT,84000,20997,0,1,1
-75,Lidiia Danyliuk,HR,45000,9774,0,0,0
-76,Petro Klymenko,IT,84000,4766,1,0,1
-77,Volodymyr Moroz,Marketing,65000,10752,1,1,1
-78,Oleksii Sobol,HR,43000,10234,0,1,1
-79,Oleksii Marchenko,Sales,46000,4878,1,0,1
-80,Svitlana Kravets,Marketing,64000,3526,1,1,0
-81,Olha Horbenko,HR,43000,10394,1,0,0
-82,Mykhailo Dmytrenko,Retail,29000,5645,0,0,0
-83,Oleksandr Shapoval,Logistics,41000,2828,1,0,1
-84,Stepan Klymenko,Logistics,54000,13574,0,0,1
-85,Oleksa Romaniuk,Logistics,46000,3093,1,1,0
-86,Mariana Vasylenko,HR,46000,9609,0,0,1
-87,Taras Levchenko,Logistics,43000,8771,0,0,0
-88,Andriana Boyko,Retail,31000,7988,1,0,0
-89,Lesia Chernenko,IT,74000,9923,1,1,1
-90,Denys Koval,Retail,32000,8642,0,1,1
-91,Bohdan Kushnir,Marketing,61000,9248,1,1,1
-92,Svitlana Zhuk,HR,35000,2564,1,0,1
-93,Bohdan Mazur,HR,52000,9501,1,0,1
-94,Stepan Polishchuk,Retail,32000,3611,1,1,1
-95,Inna Rudenko,Marketing,44000,10324,1,0,0
-96,Andrii Levchenko,Sales,41000,5086,1,1,0
-97,Oleksa Romaniuk,Sales,36000,6780,1,1,0
-98,Serhii Hrytsenko,Sales,53000,6417,1,1,0
-99,Andrii Boyko,Sales,37000,5556,1,0,1
-100,Halyna Oliinyk,Retail,29000,8655,1,0,0
-101,Natalia Boyko,IT,74000,12034,1,0,0
-102,Denys Chernenko,IT,53000,10727,0,0,1
-103,Andriana Hrytsenko,Logistics,37000,3302,1,1,1
-104,Igor Oliinyk,Retail,28000,3020,0,0,0
-105,Olha Sobol,Retail,40000,9912,1,0,1
-106,Halyna Shapoval,Marketing,58000,5060,1,1,1
-107,Mykhailo Levchenko,IT,86000,24105,1,1,1
-108,Volodymyr Chernenko,IT,84000,14569,1,1,1
-109,Oleksii Levchenko,Sales,37000,3967,1,0,0
-110,Serhii Polishchuk,IT,52000,12520,1,0,1
-111,Volodymyr Holub,IT,77000,16069,1,1,1
-112,Mykhailo Kutsenko,Logistics,38000,10048,1,0,0
-113,Oksana Fedorchuk,Sales,49000,3528,1,1,0
-114,Inna Kushnir,Sales,56000,14971,1,1,0
-115,Andriana Kushnir,Logistics,49000,11759,1,0,0
-116,Stepan Kovalenko,Sales,35000,10265,1,1,1
-117,Olha Tkachenko,IT,76000,5570,0,0,1
-118,Kateryna Mazur,HR,44000,7797,1,0,0
-119,Oksana Melnyk,IT,59000,8607,0,0,0
-120,Taras Kovalenko,Retail,40000,9900,1,0,0
-121,Andrii Karpov,Retail,39000,4860,1,0,0
-122,Volodymyr Ivanov,IT,80000,10902,1,0,1
-123,Mariana Hrytsenko,Logistics,42000,8103,1,0,1
-124,Oleksa Shevchuk,Logistics,47000,6886,1,0,0
-125,Olha Vasylenko,Marketing,54000,15732,1,1,0
-126,Oleksa Chernenko,HR,35000,8071,1,0,1
-127,Oksana Sobol,Retail,37000,8257,1,0,0
-128,Inna Melnyk,HR,45000,9301,0,1,1
-129,Olha Romaniuk,Marketing,58000,12823,1,1,1
-130,Natalia Lysenko,HR,40000,8940,0,1,0
-131,Iryna Polishchuk,Retail,34000,2937,1,0,0
-132,Andrii Oliinyk,Sales,54000,14456,1,1,0
-133,Viktor Rudenko,HR,55000,6242,1,1,0
-134,Petro Klymenko,Logistics,52000,4653,1,1,0
-135,Olha Marchenko,Logistics,43000,7060,1,0,0
-136,Taras Dmytrenko,HR,53000,7406,1,0,1
-137,Inna Kushnir,Retail,28000,5361,1,0,1
-138,Inna Chernenko,Retail,40000,9988,1,1,0
-139,Andriana Shevchuk,Logistics,39000,8075,0,0,0
-140,Iryna Ivanov,IT,73000,17015,1,1,0
-141,Taras Horbenko,Marketing,63000,11645,0,0,0
-142,Andriana Melnyk,Retail,35000,10214,1,0,0
-143,Oksana Kutsenko,Marketing,62000,18080,0,0,0
-144,Igor Chernenko,Retail,29000,7182,1,0,0
-145,Oleksii Kutsenko,IT,74000,18914,0,1,1
-146,Natalia Pavlenko,Retail,37000,3897,1,0,0
-147,Kateryna Sobol,Sales,39000,2392,1,0,1
-148,Yuliia Tkachenko,Marketing,50000,8170,1,0,0
-149,Anna Zhuk,HR,55000,4111,1,1,0
-150,Lesia Sobol,Marketing,52000,8381,1,1,0
-151,Taras Mazur,Logistics,46000,2996,1,0,0
-152,Volodymyr Marchenko,Sales,56000,5769,1,0,1
-153,Denys Oliinyk,Marketing,63000,12042,1,0,1
-154,Andrii Danyliuk,Retail,40000,3475,0,1,0
-155,Lesia Marchenko,IT,66000,16475,1,0,1
-156,Olha Melnyk,IT,70000,3776,1,1,1
-157,Inna Shevchuk,HR,49000,11980,1,1,1
-158,Oksana Dmytrenko,Logistics,51000,6395,1,1,0
-159,Inna Tkachenko,HR,38000,6557,0,1,1
-160,Inna Vasylenko,Sales,39000,4631,1,0,0
-161,Petro Kutsenko,Retail,35000,6173,1,0,1
-162,Mykhailo Pavlenko,Logistics,41000,6458,0,1,0
-163,Igor Hrytsenko,Logistics,38000,4869,1,1,0
-164,Halyna Danyliuk,Sales,37000,9543,1,1,0
-165,Lesia Klymenko,IT,53000,10420,1,1,1
-166,Denys Tkachenko,Logistics,36000,10515,1,1,0
-167,Oleksandr Levchenko,Logistics,50000,5303,1,0,0
-168,Inna Kutsenko,IT,64000,16115,0,0,0
-169,Bohdan Shapoval,Sales,54000,15242,0,1,1
-170,Andrii Petrenko,Retail,33000,1700,0,0,0
-171,Natalia Holub,Sales,58000,10591,1,1,1
-172,Igor Koval,IT,88000,6269,1,1,0
-173,Oleksandr Fedorchuk,Retail,35000,7541,1,1,0
-174,Igor Shapoval,Sales,46000,7244,1,0,0
-175,Denys Danyliuk,Sales,42000,6250,1,1,0
-176,Mykhailo Sobol,Retail,32000,4224,1,0,1
-177,Oksana Shevchuk,Logistics,42000,7352,0,0,1
-178,Mykhailo Pavlenko,HR,35000,5772,1,1,1
-179,Andriana Zhuk,Retail,29000,4386,0,1,0
-180,Mykhailo Shapoval,Sales,48000,12533,1,0,0
-181,Olena Fedorchuk,Logistics,45000,4742,0,1,0
-182,Kateryna Romaniuk,Marketing,62000,8515,0,0,0
-183,Iryna Kushnir,Marketing,46000,4568,1,0,0
-184,Petro Holub,HR,53000,12718,1,0,1
-185,Serhii Sydorenko,Logistics,45000,3948,1,1,0
-186,Natalia Melnyk,Retail,36000,2467,1,1,0
-187,Halyna Shevchuk,Logistics,37000,7538,1,1,0
-188,Anna Karpov,HR,53000,11286,1,1,1
-189,Iryna Shevchuk,Sales,60000,16486,1,0,0
-190,Lesia Rudenko,Marketing,60000,9566,1,0,1
-191,Volodymyr Melnyk,HR,48000,11693,1,1,0
-192,Lidiia Tkachenko,Retail,29000,5495,1,1,0
-193,Bohdan Dmytrenko,Retail,29000,5674,1,1,0
-194,Volodymyr Danyliuk,Marketing,57000,12950,1,0,0
-195,Natalia Polishchuk,Logistics,51000,3741,1,0,1
-196,Maksym Rudenko,Marketing,48000,13772,1,1,1
-197,Volodymyr Danyliuk,Sales,51000,12378,0,0,1
-198,Viktor Horbenko,IT,74000,6553,1,0,0
-199,Inna Rudenko,Logistics,49000,2985,1,0,0
-200,Viktor Ivanov,Logistics,49000,5316,1,0,0
+id,name,department,base_salary,bonus,health_insurance,sport,remote_allowance,Role_ua,Role
+1,Igor Sobol,Logistics,38000,2137,1,1,0,Логіст,Logistics Specialist
+2,Oleksii Kutsenko,Sales,53000,8240,1,1,0,Менеджер з продажу,Sales Manager
+3,Halyna Kovalenko,Marketing,60000,12748,1,1,1,Маркетолог,Marketing Specialist
+4,Olha Koval,Marketing,60000,9339,1,1,0,Маркетолог,Marketing Specialist
+5,Andriana Sobol,HR,38000,5310,1,1,1,HR-менеджер,HR Manager
+6,Lesia Boyko,Sales,47000,3275,1,0,0,Менеджер з продажу,Sales Manager
+7,Oksana Oliinyk,Marketing,60000,4043,1,0,0,Маркетолог,Marketing Specialist
+8,Denys Levchenko,Sales,47000,5616,1,1,0,Менеджер з продажу,Sales Manager
+9,Andriana Savchenko,Logistics,55000,3731,1,0,0,Логіст,Logistics Specialist
+10,Anna Oliinyk,Retail,38000,8437,1,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+11,Viktor Holub,Sales,60000,7731,1,1,0,Менеджер з продажу,Sales Manager
+12,Andrii Marchenko,Marketing,58000,10138,0,0,1,Маркетолог,Marketing Specialist
+13,Lesia Oliinyk,Logistics,52000,9606,0,1,0,Логіст,Logistics Specialist
+14,Iryna Klymenko,Marketing,54000,9362,0,0,1,Маркетолог,Marketing Specialist
+15,Stepan Kovalenko,IT,54000,7894,1,1,1,Програміст,Python Developer
+16,Olha Rudenko,Logistics,38000,8376,1,1,0,Логіст,Logistics Specialist
+17,Olena Polishchuk,HR,40000,6537,0,0,1,HR-менеджер,HR Manager
+18,Andrii Zhuk,IT,56000,14987,1,0,0,Програміст,Python Developer
+19,Oleksa Petrenko,Marketing,55000,15860,0,0,1,Маркетолог,Marketing Specialist
+20,Viktor Boyko,Sales,46000,12405,0,1,1,Менеджер з продажу,Sales Manager
+21,Andrii Danyliuk,Sales,37000,8620,0,0,0,Менеджер з продажу,Sales Manager
+22,Denys Sobol,Logistics,50000,14335,1,0,0,Логіст,Logistics Specialist
+23,Viktor Vasylenko,Logistics,41000,9357,1,0,0,Логіст,Logistics Specialist
+24,Svitlana Oliinyk,HR,38000,4255,1,1,1,HR-менеджер,HR Manager
+25,Volodymyr Melnyk,Sales,37000,8397,1,1,1,Менеджер з продажу,Sales Manager
+26,Viktor Boyko,IT,65000,7775,1,0,0,Програміст,Python Developer
+27,Igor Klymenko,IT,80000,8859,1,1,1,Програміст,Python Developer
+28,Petro Romaniuk,Retail,34000,5194,0,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+29,Stepan Karpov,Sales,47000,10906,0,1,1,Менеджер з продажу,Sales Manager
+30,Halyna Kutsenko,Marketing,51000,4889,1,0,1,Маркетолог,Marketing Specialist
+31,Oleksandr Marchenko,Sales,36000,7669,1,1,1,Менеджер з продажу,Sales Manager
+32,Mykhailo Kovalenko,Marketing,51000,8741,1,1,1,Маркетолог,Marketing Specialist
+33,Mariana Kutsenko,HR,43000,12110,0,1,0,HR-менеджер,HR Manager
+34,Stepan Sydorenko,Logistics,50000,4434,1,0,0,Логіст,Logistics Specialist
+35,Iryna Sydorenko,Logistics,45000,2893,1,0,0,Логіст,Logistics Specialist
+36,Mykhailo Bondar,IT,55000,14455,1,1,0,Програміст,Python Developer
+37,Svitlana Vasylenko,IT,65000,12657,1,1,0,Програміст,Python Developer
+38,Igor Shapoval,Retail,32000,3234,0,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+39,Svitlana Romaniuk,HR,45000,12701,0,1,0,HR-менеджер,HR Manager
+40,Viktor Marchenko,Sales,52000,5371,1,0,0,Менеджер з продажу,Sales Manager
+41,Halyna Vasylenko,Retail,32000,2861,0,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+42,Andrii Chernenko,Sales,56000,14239,1,0,0,Менеджер з продажу,Sales Manager
+43,Volodymyr Kravets,Sales,38000,8952,1,1,0,Менеджер з продажу,Sales Manager
+44,Anna Koval,Logistics,55000,14477,1,1,0,Логіст,Logistics Specialist
+45,Serhii Horbenko,Logistics,48000,12352,1,1,1,Логіст,Logistics Specialist
+46,Viktor Tkachenko,Logistics,49000,9208,1,1,1,Логіст,Logistics Specialist
+47,Natalia Zhuk,IT,52000,13449,1,1,1,Програміст,Python Developer
+48,Viktor Pavlenko,Sales,46000,4715,1,1,0,Менеджер з продажу,Sales Manager
+49,Iryna Pavlenko,IT,59000,16605,1,1,0,Програміст,Python Developer
+50,Oksana Marchenko,Sales,40000,9365,1,0,0,Менеджер з продажу,Sales Manager
+51,Kateryna Ivanov,Retail,30000,7405,1,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+52,Denys Dmytrenko,HR,46000,5809,0,1,1,HR-менеджер,HR Manager
+53,Mykhailo Sobol,Retail,32000,8514,0,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+54,Serhii Shevchuk,Retail,28000,2207,0,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+55,Olena Bondar,Sales,54000,8566,0,1,0,Менеджер з продажу,Sales Manager
+56,Halyna Sobol,HR,53000,5168,1,1,1,HR-менеджер,HR Manager
+57,Volodymyr Bondar,Logistics,41000,5783,1,0,0,Логіст,Logistics Specialist
+58,Stepan Danyliuk,Logistics,44000,7778,1,1,0,Логіст,Logistics Specialist
+59,Svitlana Shapoval,Marketing,51000,11027,1,0,1,Маркетолог,Marketing Specialist
+60,Inna Holub,HR,52000,13438,1,1,0,HR-менеджер,HR Manager
+61,Halyna Horbenko,HR,49000,7866,1,1,0,HR-менеджер,HR Manager
+62,Oleksandr Marchenko,Logistics,37000,4475,1,0,1,Логіст,Logistics Specialist
+63,Oleksa Melnyk,Logistics,44000,4671,1,1,0,Логіст,Logistics Specialist
+64,Mykhailo Marchenko,HR,48000,13033,1,0,1,HR-менеджер,HR Manager
+65,Oleksandr Klymenko,Marketing,58000,12870,0,0,0,Маркетолог,Marketing Specialist
+66,Lidiia Bondar,Marketing,43000,10794,1,1,1,Маркетолог,Marketing Specialist
+67,Oleksandr Karpov,HR,39000,9763,1,0,1,HR-менеджер,HR Manager
+68,Oksana Hrytsenko,IT,82000,12848,0,1,1,Програміст,Python Developer
+69,Oleksa Marchenko,HR,43000,10231,0,1,0,HR-менеджер,HR Manager
+70,Stepan Koval,Retail,35000,2427,1,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+71,Yuliia Moroz,Marketing,42000,4528,1,0,1,Маркетолог,Marketing Specialist
+72,Svitlana Petrenko,IT,79000,12161,1,1,0,Програміст,Python Developer
+73,Viktor Pavlenko,IT,74000,12524,0,1,1,Програміст,Python Developer
+74,Oleksa Petrenko,IT,84000,20997,0,1,1,Програміст,Python Developer
+75,Lidiia Danyliuk,HR,45000,9774,0,0,0,HR-менеджер,HR Manager
+76,Petro Klymenko,IT,84000,4766,1,0,1,Програміст,Python Developer
+77,Volodymyr Moroz,Marketing,65000,10752,1,1,1,Маркетолог,Marketing Specialist
+78,Oleksii Sobol,HR,43000,10234,0,1,1,HR-менеджер,HR Manager
+79,Oleksii Marchenko,Sales,46000,4878,1,0,1,Менеджер з продажу,Sales Manager
+80,Svitlana Kravets,Marketing,64000,3526,1,1,0,Маркетолог,Marketing Specialist
+81,Olha Horbenko,HR,43000,10394,1,0,0,HR-менеджер,HR Manager
+82,Mykhailo Dmytrenko,Retail,29000,5645,0,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+83,Oleksandr Shapoval,Logistics,41000,2828,1,0,1,Логіст,Logistics Specialist
+84,Stepan Klymenko,Logistics,54000,13574,0,0,1,Логіст,Logistics Specialist
+85,Oleksa Romaniuk,Logistics,46000,3093,1,1,0,Логіст,Logistics Specialist
+86,Mariana Vasylenko,HR,46000,9609,0,0,1,HR-менеджер,HR Manager
+87,Taras Levchenko,Logistics,43000,8771,0,0,0,Логіст,Logistics Specialist
+88,Andriana Boyko,Retail,31000,7988,1,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+89,Lesia Chernenko,IT,74000,9923,1,1,1,Програміст,Python Developer
+90,Denys Koval,Retail,32000,8642,0,1,1,Фахівець роздрібної торгівлі,Retail Specialist
+91,Bohdan Kushnir,Marketing,61000,9248,1,1,1,Маркетолог,Marketing Specialist
+92,Svitlana Zhuk,HR,35000,2564,1,0,1,HR-менеджер,HR Manager
+93,Bohdan Mazur,HR,52000,9501,1,0,1,HR-менеджер,HR Manager
+94,Stepan Polishchuk,Retail,32000,3611,1,1,1,Фахівець роздрібної торгівлі,Retail Specialist
+95,Inna Rudenko,Marketing,44000,10324,1,0,0,Маркетолог,Marketing Specialist
+96,Andrii Levchenko,Sales,41000,5086,1,1,0,Менеджер з продажу,Sales Manager
+97,Oleksa Romaniuk,Sales,36000,6780,1,1,0,Менеджер з продажу,Sales Manager
+98,Serhii Hrytsenko,Sales,53000,6417,1,1,0,Менеджер з продажу,Sales Manager
+99,Andrii Boyko,Sales,37000,5556,1,0,1,Менеджер з продажу,Sales Manager
+100,Halyna Oliinyk,Retail,29000,8655,1,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+101,Natalia Boyko,IT,74000,12034,1,0,0,Програміст,Python Developer
+102,Denys Chernenko,IT,53000,10727,0,0,1,Програміст,Python Developer
+103,Andriana Hrytsenko,Logistics,37000,3302,1,1,1,Логіст,Logistics Specialist
+104,Igor Oliinyk,Retail,28000,3020,0,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+105,Olha Sobol,Retail,40000,9912,1,0,1,Фахівець роздрібної торгівлі,Retail Specialist
+106,Halyna Shapoval,Marketing,58000,5060,1,1,1,Маркетолог,Marketing Specialist
+107,Mykhailo Levchenko,IT,86000,24105,1,1,1,Програміст,Python Developer
+108,Volodymyr Chernenko,IT,84000,14569,1,1,1,Програміст,Python Developer
+109,Oleksii Levchenko,Sales,37000,3967,1,0,0,Менеджер з продажу,Sales Manager
+110,Serhii Polishchuk,IT,52000,12520,1,0,1,Програміст,Python Developer
+111,Volodymyr Holub,IT,77000,16069,1,1,1,Програміст,Python Developer
+112,Mykhailo Kutsenko,Logistics,38000,10048,1,0,0,Логіст,Logistics Specialist
+113,Oksana Fedorchuk,Sales,49000,3528,1,1,0,Менеджер з продажу,Sales Manager
+114,Inna Kushnir,Sales,56000,14971,1,1,0,Менеджер з продажу,Sales Manager
+115,Andriana Kushnir,Logistics,49000,11759,1,0,0,Логіст,Logistics Specialist
+116,Stepan Kovalenko,Sales,35000,10265,1,1,1,Менеджер з продажу,Sales Manager
+117,Olha Tkachenko,IT,76000,5570,0,0,1,Програміст,Python Developer
+118,Kateryna Mazur,HR,44000,7797,1,0,0,HR-менеджер,HR Manager
+119,Oksana Melnyk,IT,59000,8607,0,0,0,Програміст,Python Developer
+120,Taras Kovalenko,Retail,40000,9900,1,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+121,Andrii Karpov,Retail,39000,4860,1,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+122,Volodymyr Ivanov,IT,80000,10902,1,0,1,Програміст,Python Developer
+123,Mariana Hrytsenko,Logistics,42000,8103,1,0,1,Логіст,Logistics Specialist
+124,Oleksa Shevchuk,Logistics,47000,6886,1,0,0,Логіст,Logistics Specialist
+125,Olha Vasylenko,Marketing,54000,15732,1,1,0,Маркетолог,Marketing Specialist
+126,Oleksa Chernenko,HR,35000,8071,1,0,1,HR-менеджер,HR Manager
+127,Oksana Sobol,Retail,37000,8257,1,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+128,Inna Melnyk,HR,45000,9301,0,1,1,HR-менеджер,HR Manager
+129,Olha Romaniuk,Marketing,58000,12823,1,1,1,Маркетолог,Marketing Specialist
+130,Natalia Lysenko,HR,40000,8940,0,1,0,HR-менеджер,HR Manager
+131,Iryna Polishchuk,Retail,34000,2937,1,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+132,Andrii Oliinyk,Sales,54000,14456,1,1,0,Менеджер з продажу,Sales Manager
+133,Viktor Rudenko,HR,55000,6242,1,1,0,HR-менеджер,HR Manager
+134,Petro Klymenko,Logistics,52000,4653,1,1,0,Логіст,Logistics Specialist
+135,Olha Marchenko,Logistics,43000,7060,1,0,0,Логіст,Logistics Specialist
+136,Taras Dmytrenko,HR,53000,7406,1,0,1,HR-менеджер,HR Manager
+137,Inna Kushnir,Retail,28000,5361,1,0,1,Фахівець роздрібної торгівлі,Retail Specialist
+138,Inna Chernenko,Retail,40000,9988,1,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+139,Andriana Shevchuk,Logistics,39000,8075,0,0,0,Логіст,Logistics Specialist
+140,Iryna Ivanov,IT,73000,17015,1,1,0,Програміст,Python Developer
+141,Taras Horbenko,Marketing,63000,11645,0,0,0,Маркетолог,Marketing Specialist
+142,Andriana Melnyk,Retail,35000,10214,1,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+143,Oksana Kutsenko,Marketing,62000,18080,0,0,0,Маркетолог,Marketing Specialist
+144,Igor Chernenko,Retail,29000,7182,1,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+145,Oleksii Kutsenko,IT,74000,18914,0,1,1,Програміст,Python Developer
+146,Natalia Pavlenko,Retail,37000,3897,1,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+147,Kateryna Sobol,Sales,39000,2392,1,0,1,Менеджер з продажу,Sales Manager
+148,Yuliia Tkachenko,Marketing,50000,8170,1,0,0,Маркетолог,Marketing Specialist
+149,Anna Zhuk,HR,55000,4111,1,1,0,HR-менеджер,HR Manager
+150,Lesia Sobol,Marketing,52000,8381,1,1,0,Маркетолог,Marketing Specialist
+151,Taras Mazur,Logistics,46000,2996,1,0,0,Логіст,Logistics Specialist
+152,Volodymyr Marchenko,Sales,56000,5769,1,0,1,Менеджер з продажу,Sales Manager
+153,Denys Oliinyk,Marketing,63000,12042,1,0,1,Маркетолог,Marketing Specialist
+154,Andrii Danyliuk,Retail,40000,3475,0,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+155,Lesia Marchenko,IT,66000,16475,1,0,1,Програміст,Python Developer
+156,Olha Melnyk,IT,70000,3776,1,1,1,Програміст,Python Developer
+157,Inna Shevchuk,HR,49000,11980,1,1,1,HR-менеджер,HR Manager
+158,Oksana Dmytrenko,Logistics,51000,6395,1,1,0,Логіст,Logistics Specialist
+159,Inna Tkachenko,HR,38000,6557,0,1,1,HR-менеджер,HR Manager
+160,Inna Vasylenko,Sales,39000,4631,1,0,0,Менеджер з продажу,Sales Manager
+161,Petro Kutsenko,Retail,35000,6173,1,0,1,Фахівець роздрібної торгівлі,Retail Specialist
+162,Mykhailo Pavlenko,Logistics,41000,6458,0,1,0,Логіст,Logistics Specialist
+163,Igor Hrytsenko,Logistics,38000,4869,1,1,0,Логіст,Logistics Specialist
+164,Halyna Danyliuk,Sales,37000,9543,1,1,0,Менеджер з продажу,Sales Manager
+165,Lesia Klymenko,IT,53000,10420,1,1,1,Програміст,Python Developer
+166,Denys Tkachenko,Logistics,36000,10515,1,1,0,Логіст,Logistics Specialist
+167,Oleksandr Levchenko,Logistics,50000,5303,1,0,0,Логіст,Logistics Specialist
+168,Inna Kutsenko,IT,64000,16115,0,0,0,Програміст,Python Developer
+169,Bohdan Shapoval,Sales,54000,15242,0,1,1,Менеджер з продажу,Sales Manager
+170,Andrii Petrenko,Retail,33000,1700,0,0,0,Фахівець роздрібної торгівлі,Retail Specialist
+171,Natalia Holub,Sales,58000,10591,1,1,1,Менеджер з продажу,Sales Manager
+172,Igor Koval,IT,88000,6269,1,1,0,Програміст,Python Developer
+173,Oleksandr Fedorchuk,Retail,35000,7541,1,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+174,Igor Shapoval,Sales,46000,7244,1,0,0,Менеджер з продажу,Sales Manager
+175,Denys Danyliuk,Sales,42000,6250,1,1,0,Менеджер з продажу,Sales Manager
+176,Mykhailo Sobol,Retail,32000,4224,1,0,1,Фахівець роздрібної торгівлі,Retail Specialist
+177,Oksana Shevchuk,Logistics,42000,7352,0,0,1,Логіст,Logistics Specialist
+178,Mykhailo Pavlenko,HR,35000,5772,1,1,1,HR-менеджер,HR Manager
+179,Andriana Zhuk,Retail,29000,4386,0,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+180,Mykhailo Shapoval,Sales,48000,12533,1,0,0,Менеджер з продажу,Sales Manager
+181,Olena Fedorchuk,Logistics,45000,4742,0,1,0,Логіст,Logistics Specialist
+182,Kateryna Romaniuk,Marketing,62000,8515,0,0,0,Маркетолог,Marketing Specialist
+183,Iryna Kushnir,Marketing,46000,4568,1,0,0,Маркетолог,Marketing Specialist
+184,Petro Holub,HR,53000,12718,1,0,1,HR-менеджер,HR Manager
+185,Serhii Sydorenko,Logistics,45000,3948,1,1,0,Логіст,Logistics Specialist
+186,Natalia Melnyk,Retail,36000,2467,1,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+187,Halyna Shevchuk,Logistics,37000,7538,1,1,0,Логіст,Logistics Specialist
+188,Anna Karpov,HR,53000,11286,1,1,1,HR-менеджер,HR Manager
+189,Iryna Shevchuk,Sales,60000,16486,1,0,0,Менеджер з продажу,Sales Manager
+190,Lesia Rudenko,Marketing,60000,9566,1,0,1,Маркетолог,Marketing Specialist
+191,Volodymyr Melnyk,HR,48000,11693,1,1,0,HR-менеджер,HR Manager
+192,Lidiia Tkachenko,Retail,29000,5495,1,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+193,Bohdan Dmytrenko,Retail,29000,5674,1,1,0,Фахівець роздрібної торгівлі,Retail Specialist
+194,Volodymyr Danyliuk,Marketing,57000,12950,1,0,0,Маркетолог,Marketing Specialist
+195,Natalia Polishchuk,Logistics,51000,3741,1,0,1,Логіст,Logistics Specialist
+196,Maksym Rudenko,Marketing,48000,13772,1,1,1,Маркетолог,Marketing Specialist
+197,Volodymyr Danyliuk,Sales,51000,12378,0,0,1,Менеджер з продажу,Sales Manager
+198,Viktor Horbenko,IT,74000,6553,1,0,0,Програміст,Python Developer
+199,Inna Rudenko,Logistics,49000,2985,1,0,0,Логіст,Logistics Specialist
+200,Viktor Ivanov,Logistics,49000,5316,1,0,0,Логіст,Logistics Specialist
