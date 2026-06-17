@@ -86,14 +86,14 @@ def main():
     # ---- ГРАФІКИ ----
     dept_comp = filtered_df.groupby("department")[["base_salary", "bonus", "total_compensation"]].mean().reset_index()
     st.plotly_chart(px.bar(dept_comp, x="department", y=["base_salary", "bonus"], barmode="group",
-                           title="Середня базова зарплата та бонус по відділах"), use_container_width=True)
+                           title="Середня базова зарплата та бонус по відділах"), width="stretch")
     st.plotly_chart(px.bar(dept_comp, x="department", y="total_compensation",
-                           title="Середній повний пакет по відділах"), use_container_width=True)
+                           title="Середній повний пакет по відділах"), width="stretch")
 
     fig_box, ax = plt.subplots(figsize=(8, 4))
     sns.boxplot(data=filtered_df, x="department", y="base_salary", ax=ax)
     plt.xticks(rotation=30)
-    st.pyplot(fig_box)
+    st.pyplot(fig_box, width="stretch")
 
     st.markdown("---")
 
@@ -104,7 +104,7 @@ def main():
     st.dataframe(top_df[[
         "name","department","base_salary","bonus",
         "health_insurance","sport","remote_allowance","total_compensation","Role_ua","Role"
-    ]])
+    ]], width="stretch")
 
     st.markdown("---")
 
@@ -116,12 +116,34 @@ def main():
 
     st.markdown("---")
 
-    # ---- Market Analysis ----
-    st.markdown("### 🌍 Market Analysis")
-    role_ua = st.selectbox("Оберіть посаду (укр):", df["Role_ua"].unique())
-    market_df = get_market_data(role_ua)
-    st.dataframe(market_df)
+    #import streamlit as st
+from parser import get_market_data
+
+st.title("Market Analysis")
+st.subheader("Оберіть посаду (укр)")
+
+# список посад для вибору
+roles = [
+    "Касир", "Продавець-консультант", "Менеджер з продажу",
+    "HR-менеджер", "Маркетолог", "SMM-менеджер",
+    "Логіст", "Комірник", "Кухар", "Бариста",
+    "Офіціант", "Бухгалтер", "Адміністратор", "Директор",
+    "Програміст"
+]
+
+selected_role = st.selectbox("Посада:", roles)
+
+if selected_role:
+    data = get_market_data(selected_role)
+    st.write("### Результат пошуку")
+    st.table({
+        "Role": [selected_role],
+        "Salary": [data["salary"]],
+        "Source": [data["source"]]
+    })
+
 
 # === Запуск ===
 if __name__ == "__main__":
     main()
+
