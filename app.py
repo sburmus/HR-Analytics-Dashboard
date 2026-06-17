@@ -3,10 +3,8 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import seaborn as sns
-from parser import get_market_data, parse_salary
-
 import matplotlib.pyplot as plt
-from parser import get_market_data
+from parser import get_market_data   # тепер тільки get_market_data
 
 # === КОНСТАНТИ ===
 BENEFIT_COSTS = {
@@ -41,10 +39,7 @@ def main():
     df.columns = df.columns.str.strip()
     df = add_total_compensation(df)
 
-    # ---- ШАПКА ----
-    st.markdown("## HR Analytics – Аналіз компенсацій і пільг")
-
-    # ---- SIDEBAR: ФІЛЬТРИ ----
+    # ---- ФІЛЬТРИ ----
     st.sidebar.title("🔎 Панель фільтрів")
     departments = st.sidebar.multiselect("Відділи:", options=sorted(df["department"].unique()))
     salary_min, salary_max = int(df["base_salary"].min()), int(df["base_salary"].max())
@@ -54,7 +49,6 @@ def main():
     only_sport = st.sidebar.checkbox("Тільки зі спортивною пільгою")
     only_remote = st.sidebar.checkbox("Тільки з remote allowance")
 
-    # ---- ЗАСТОСУВАННЯ ФІЛЬТРІВ ----
     filtered_df = df.copy()
     if departments:
         filtered_df = filtered_df[filtered_df["department"].isin(departments)]
@@ -116,52 +110,50 @@ def main():
 
     st.markdown("---")
 
-# ---- MARKET ANALYSIS ----
-st.title("Market Analysis")
-st.subheader("Оберіть посаду (укр)")
+    # ---- MARKET ANALYSIS ----
+    st.title("Market Analysis")
+    st.subheader("Оберіть посаду (укр)")
 
-roles = [
-    "Касир", "Продавець-консультант", "Менеджер з продажу",
-    "HR-менеджер", "Маркетолог", "SMM-менеджер",
-    "Логіст", "Комірник", "Кухар", "Бариста",
-    "Офіціант", "Бухгалтер", "Адміністратор", "Директор",
-    "Програміст"
-]
+    roles = [
+        "Касир", "Продавець-консультант", "Менеджер з продажу",
+        "HR-менеджер", "Маркетолог", "SMM-менеджер",
+        "Логіст", "Комірник", "Кухар", "Бариста",
+        "Офіціант", "Бухгалтер", "Адміністратор", "Директор",
+        "Програміст"
+    ]
 
-selected_role = st.selectbox("Посада:", roles)
+    selected_role = st.selectbox("Посада:", roles)
 
-if selected_role:
-    data = get_market_data(selected_role)
-    st.write(f"### Результат пошуку (оновлено: {data['updated'][:10]})")
-    st.table({
-        "Role": [selected_role],
-        "Salary": [data["salary"]],
-        "Source": [data["source"]]
-    })
+    if selected_role:
+        data = get_market_data(selected_role)
+        st.write(f"### Результат пошуку (оновлено: {data['updated'][:10]})")
+        st.table({
+            "Role": [selected_role],
+            "Salary": [data["salary"]],
+            "Source": [data["source"]]
+        })
 
-    # ---- ПОРІВНЯННЯ З РИНКОМ ----
-    avg_internal = filtered_df[filtered_df["Role_ua"] == selected_role]["base_salary"].mean()
-    if not np.isnan(avg_internal) and data["salary"] != "Не вказано":
-        try:
-            market_salary = parse_salary(data["salary"])
-            diff = ((avg_internal - market_salary) / market_salary) * 100
+        avg_internal = filtered_df[filtered_df["Role_ua"] == selected_role]["base_salary"].mean()
+        if not np.isnan(avg_internal) and data["salary"] != "Не вказано":
+            try:
+                market_salary = int(data["salary"])   # тепер напряму число
+                diff = ((avg_internal - market_salary) / market_salary) * 100
 
-            st.write(f"📈 Внутрішня середня зарплата для {selected_role}: {avg_internal:,.0f} грн")
-            st.write(f"📊 Ринкова зарплата (Work.ua/DOU): {market_salary:,.0f} грн")
-            st.write(f"🔍 Відхилення: {diff:+.1f}%")
+                st.write(f"📈 Внутрішня середня зарплата для {selected_role}: {avg_internal:,.0f} грн")
+                st.write(f"📊 Ринкова зарплата (Work.ua/DOU): {market_salary:,.0f} грн")
+                st.write(f"🔍 Відхилення: {diff:+.1f}%")
 
-            # ---- ГРАФІК ПОРІВНЯННЯ ----
-            comp_df = pd.DataFrame({
-                "Тип": ["Внутрішня", "Ринкова"],
-                "Зарплата": [avg_internal, market_salary]
-            })
-            st.plotly_chart(px.bar(comp_df, x="Тип", y="Зарплата",
-                                   title=f"Порівняння зарплат для {selected_role}"),
-                            use_container_width=True)
+                comp_df = pd.DataFrame({
+                    "Тип": ["Внутрішня", "Ринкова"],
+                    "Зарплата": [avg_internal, market_salary]
+                })
+                st.plotly_chart(px.bar(comp_df, x="Тип", y="Зарплата",
+                                       title=f"Порівняння зарплат для {selected_role}"),
+                                use_container_width=True)
 
-        except Exception as e:
-            st.info(f"Не вдалося розрахувати відхилення: {e}")
+            except Exception as e:
+                st.info(f"Не вдалося розрахувати відхилення: {e}")
 
-# === Запуск ===
+# ---- Запуск ----
 if __name__ == "__main__":
     main()
