@@ -35,24 +35,21 @@ def main():
     st.set_page_config(page_title="HR Analytics – Compensation & Benefits", layout="wide")
 
     # ---- Завантаження даних ----
-    df = pd.read_csv("compensation.csv")
+    df = pd.read_csv("compensation.csv", sep=",")
+    df.columns = df.columns.str.strip()
     df = add_total_compensation(df)
+
+    st.write("Колонки у CSV:", df.columns.tolist())  # для перевірки
 
     # ---- ШАПКА ----
     st.markdown("## HR Analytics – Аналіз компенсацій і пільг")
-    st.write("Дашборд показує структуру компенсаційних пакетів співробітників: "
-             "базову зарплату, бонуси та пільги. Є фільтри, ключові показники, графіки та аналіз ринку.")
-
-    st.markdown("---")
 
     # ---- SIDEBAR: ФІЛЬТРИ ----
     st.sidebar.title("🔎 Панель фільтрів")
-
     departments = st.sidebar.multiselect("Відділи:", options=sorted(df["department"].unique()))
     salary_min, salary_max = int(df["base_salary"].min()), int(df["base_salary"].max())
     salary_range = st.sidebar.slider("Діапазон базової зарплати:", min_value=salary_min, max_value=salary_max,
                                      value=(salary_min, salary_max), step=1000)
-
     only_health = st.sidebar.checkbox("Тільки з медстрахуванням")
     only_sport = st.sidebar.checkbox("Тільки зі спортивною пільгою")
     only_remote = st.sidebar.checkbox("Тільки з remote allowance")
@@ -86,30 +83,17 @@ def main():
 
     st.markdown("---")
 
-    # ---- ГРАФІКИ ПО ВІДДІЛАХ ----
+    # ---- ГРАФІКИ ----
     dept_comp = filtered_df.groupby("department")[["base_salary", "bonus", "total_compensation"]].mean().reset_index()
     st.plotly_chart(px.bar(dept_comp, x="department", y=["base_salary", "bonus"], barmode="group",
                            title="Середня базова зарплата та бонус по відділах"), use_container_width=True)
     st.plotly_chart(px.bar(dept_comp, x="department", y="total_compensation",
                            title="Середній повний пакет по відділах"), use_container_width=True)
 
-    # ---- BOXplot ----
     fig_box, ax = plt.subplots(figsize=(8, 4))
     sns.boxplot(data=filtered_df, x="department", y="base_salary", ax=ax)
     plt.xticks(rotation=30)
     st.pyplot(fig_box)
-
-    st.markdown("---")
-
-    # ---- ПІЛЬГИ ----
-    benefits_count = {
-        "Медстрахування": int(filtered_df["health_insurance"].sum()),
-        "Спортзал": int(filtered_df["sport"].sum()),
-        "Remote allowance": int(filtered_df["remote_allowance"].sum()),
-    }
-    benefits_df = pd.DataFrame(list(benefits_count.items()), columns=["Пільга", "Кількість"])
-    st.plotly_chart(px.pie(benefits_df, names="Пільга", values="Кількість", title="Розподіл пільг"), use_container_width=True)
-    st.dataframe(benefits_df)
 
     st.markdown("---")
 
@@ -134,25 +118,9 @@ def main():
 
     # ---- Market Analysis ----
     st.markdown("### 🌍 Market Analysis")
-
-    # вибір української назви посади
     role_ua = st.selectbox("Оберіть посаду (укр):", df["Role_ua"].unique())
-    city = st.selectbox("Оберіть місто:", ["Київ","Львів","Полтава","Одеса"])
-
-    # виклик парсера з українською назвою
-    market_df = get_market_data(role_ua, city)
-
-    if isinstance(market_df, pd.DataFrame) and "Salary" in market_df.columns:
-        market_df["Salary"] = market_df["Salary"].replace(["Не вказано",""], "—")
-        st.dataframe(market_df)
-
-        valid_salaries = pd.to_numeric(market_df["Salary"].str.replace(" грн",""), errors="coerce").dropna()
-        if not valid_salaries.empty:
-            st.metric("Середня ринкова зарплата", f"{valid_salaries.mean():,.0f} грн")
-        else:
-            st.warning("Для цієї посади/міста немає вказаних зарплат.")
-    else:
-        st.warning("Парсер не повернув даних для цієї посади/міста.")
+    market_df = get_market_data(role_ua)
+    st.dataframe(market_df)
 
 # === Запуск ===
 if __name__ == "__main__":
