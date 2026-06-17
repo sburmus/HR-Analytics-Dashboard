@@ -1,49 +1,49 @@
+import pandas as pd
+import numpy as np
 import json
-import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
-MARKET_FILE = "market_salaries.json"
-
-# 🔹 Словник зарплат одразу як числа
-DEFAULT_SALARIES = {
-    "Продавець-консультант": 23500,
-    "Менеджер з продажу": 37500,
-    "Комірник": 28500,
-    "Кухар": 31500,
-    "Водій": 37500,
-    "Касир": 22500,
-    "Бариста": 24000,
-    "HR-менеджер": 32000,
-    "Маркетолог": 35000,
-    "SMM-менеджер": 30000,
-    "Бухгалтер": 33000,
-    "Директор": 60000,
-    "Програміст": 75000
-    # ... решта посад
-}
-
-def update_market_salaries():
-    with open(MARKET_FILE, "w", encoding="utf-8") as f:
-        json.dump({"updated": datetime.now().isoformat(), "data": DEFAULT_SALARIES},
-                  f, ensure_ascii=False, indent=2)
-
-def load_market_salaries():
-    if not os.path.exists(MARKET_FILE):
-        update_market_salaries()
-    with open(MARKET_FILE, "r", encoding="utf-8") as f:
-        content = json.load(f)
-
-    updated = datetime.fromisoformat(content["updated"])
-    if datetime.now() - updated > timedelta(days=30):
-        update_market_salaries()
-        with open(MARKET_FILE, "r", encoding="utf-8") as f:
-            content = json.load(f)
-
-    return content["data"], content["updated"]
-
+# === Функція для отримання ринкових зарплат із JSON (Work.ua/DOU) ===
 def get_market_data(role_ua: str):
-    salaries, updated = load_market_salaries()
-    if role_ua in salaries:
-        return {"source": "Work.ua/stat", "salary": int(salaries[role_ua]), "updated": updated}
-    else:
-        return {"source": "None", "salary": "Не вказано", "updated": updated}
+    try:
+        with open("market_salaries.json", "r", encoding="utf-8") as f:
+            content = json.load(f)
+        salaries = content.get("data", {})
+        updated = content.get("updated", datetime.now().strftime("%Y-%m-%d"))
+        if role_ua in salaries:
+            return {
+                "source": "Work.ua/DOU",
+                "salary": int(salaries[role_ua]),
+                "updated": updated
+            }
+        else:
+            return {
+                "source": "Work.ua/DOU",
+                "salary": "Не вказано",
+                "updated": updated
+            }
+    except Exception as e:
+        return {
+            "source": "Error",
+            "salary": "Не вказано",
+            "updated": datetime.now().strftime("%Y-%m-%d"),
+            "error": str(e)
+        }
+
+# === Функція для генерації випадкових власних досліджень ринку ===
+def generate_random_market_research():
+    roles = [
+        "Програміст", "HR-менеджер", "Маркетолог",
+        "Касир", "Бариста", "Бухгалтер", "Менеджер з продажу",
+        "Адміністратор", "Директор"
+    ]
+    data = []
+    for role in roles:
+        salary = np.random.randint(20000, 80000)  # випадкова зарплата
+        data.append({
+            "Role": role,
+            "Market_Salary": salary,
+            "Source": "Власне дослідження",
+            "Date": datetime.now().strftime("%Y-%m-%d")
+        })
+    return pd.DataFrame(data)
