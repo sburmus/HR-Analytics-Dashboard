@@ -39,8 +39,6 @@ def main():
     df.columns = df.columns.str.strip()
     df = add_total_compensation(df)
 
-    st.write("Колонки у CSV:", df.columns.tolist())  # для перевірки
-
     # ---- ШАПКА ----
     st.markdown("## HR Analytics – Аналіз компенсацій і пільг")
 
@@ -86,14 +84,14 @@ def main():
     # ---- ГРАФІКИ ----
     dept_comp = filtered_df.groupby("department")[["base_salary", "bonus", "total_compensation"]].mean().reset_index()
     st.plotly_chart(px.bar(dept_comp, x="department", y=["base_salary", "bonus"], barmode="group",
-                           title="Середня базова зарплата та бонус по відділах"), width="stretch")
+                           title="Середня базова зарплата та бонус по відділах"), use_container_width=True)
     st.plotly_chart(px.bar(dept_comp, x="department", y="total_compensation",
-                           title="Середній повний пакет по відділах"), width="stretch")
+                           title="Середній повний пакет по відділах"), use_container_width=True)
 
     fig_box, ax = plt.subplots(figsize=(8, 4))
     sns.boxplot(data=filtered_df, x="department", y="base_salary", ax=ax)
     plt.xticks(rotation=30)
-    st.pyplot(fig_box, width="stretch")
+    st.pyplot(fig_box, use_container_width=True)
 
     st.markdown("---")
 
@@ -104,7 +102,7 @@ def main():
     st.dataframe(top_df[[
         "name","department","base_salary","bonus",
         "health_insurance","sport","remote_allowance","total_compensation","Role_ua","Role"
-    ]], width="stretch")
+    ]], use_container_width=True)
 
     st.markdown("---")
 
@@ -116,34 +114,41 @@ def main():
 
     st.markdown("---")
 
-    #import streamlit as st
-from parser import get_market_data
+    # ---- MARKET ANALYSIS ----
+    st.title("Market Analysis")
+    st.subheader("Оберіть посаду (укр)")
 
-st.title("Market Analysis")
-st.subheader("Оберіть посаду (укр)")
+    roles = [
+        "Касир", "Продавець-консультант", "Менеджер з продажу",
+        "HR-менеджер", "Маркетолог", "SMM-менеджер",
+        "Логіст", "Комірник", "Кухар", "Бариста",
+        "Офіціант", "Бухгалтер", "Адміністратор", "Директор",
+        "Програміст"
+    ]
 
-# список посад для вибору
-roles = [
-    "Касир", "Продавець-консультант", "Менеджер з продажу",
-    "HR-менеджер", "Маркетолог", "SMM-менеджер",
-    "Логіст", "Комірник", "Кухар", "Бариста",
-    "Офіціант", "Бухгалтер", "Адміністратор", "Директор",
-    "Програміст"
-]
+    selected_role = st.selectbox("Посада:", roles)
 
-selected_role = st.selectbox("Посада:", roles)
+    if selected_role:
+        data = get_market_data(selected_role)
+        st.write("### Результат пошуку")
+        st.table({
+            "Role": [selected_role],
+            "Salary": [data["salary"]],
+            "Source": [data["source"]]
+        })
 
-if selected_role:
-    data = get_market_data(selected_role)
-    st.write("### Результат пошуку")
-    st.table({
-        "Role": [selected_role],
-        "Salary": [data["salary"]],
-        "Source": [data["source"]]
-    })
-
+        # ---- ПОРІВНЯННЯ З РИНКОМ ----
+        avg_internal = filtered_df[filtered_df["Role_ua"] == selected_role]["base_salary"].mean()
+        if not np.isnan(avg_internal) and data["salary"] != "Не вказано":
+            try:
+                market_salary = int(data["salary"].split()[0].replace(" ", ""))
+                diff = ((avg_internal - market_salary) / market_salary) * 100
+                st.write(f"📈 Внутрішня середня зарплата для {selected_role}: {avg_internal:,.0f} грн")
+                st.write(f"📊 Ринкова зарплата (Work.ua/DOU): {market_salary:,.0f} грн")
+                st.write(f"🔍 Відхилення: {diff:+.1f}%")
+            except:
+                st.info("Не вдалося розрахувати відхилення через формат даних.")
 
 # === Запуск ===
 if __name__ == "__main__":
     main()
-
