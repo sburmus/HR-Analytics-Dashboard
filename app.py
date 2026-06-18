@@ -8,7 +8,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import seaborn as sns
 import matplotlib.pyplot as plt
-st.set_page_config(layout="wide")
 
 # Динамічний імпорт допоміжних функцій
 module_path = Path(__file__).parent / "parser.py"
@@ -20,17 +19,21 @@ get_market_data = parser.get_market_data
 generate_random_market_research = parser.generate_random_market_research
 
 # Вартість пільг (грн), використовується для розрахунку повного компенсаційного пакету
+
+
 BENEFIT_COSTS = {
     "health_insurance": 5000,
     "sport": 2000,
     "remote_allowance": 3000
 }
 
-
 def add_total_compensation(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     for col in ["health_insurance", "sport", "remote_allowance"]:
-        df[col] = df[col].fillna(0).astype(float)
+        if col in df.columns:
+            df[col] = df[col].fillna(0).astype(float)
+        else:
+            df[col] = 0
     df["total_compensation"] = (
         df["base_salary"] +
         df["bonus"] +
@@ -39,7 +42,6 @@ def add_total_compensation(df: pd.DataFrame) -> pd.DataFrame:
         df["remote_allowance"] * BENEFIT_COSTS["remote_allowance"]
     )
     return df
-
 
 def convert_df_to_csv(df: pd.DataFrame) -> bytes:
     return df.to_csv(index=False).encode("utf-8")
@@ -269,9 +271,13 @@ def main():
     Інтерактивний інструмент для аналізу зарплат, бонусів, компенсацій і порівняння з ринковими даними.
     Використовуйте меню зліва для переходу між розділами.
     """)
-
+    # Завантаження даних
     df = pd.read_csv("compensation.csv")
     df.columns = df.columns.str.strip()
+
+    # Додаємо колонку total_compensation
+   
+    
     df = add_total_compensation(df)
 
     st.sidebar.title("Меню")
@@ -319,31 +325,116 @@ def main():
         st.warning("За обраними фільтрами немає співробітників. Змініть параметри фільтру.")
         return
 
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+def main():
+    st.set_page_config(page_title="HR Analytics Dashboard", layout="wide")
+
+    # --- Завантаження даних ---
+    df = pd.read_csv("compensation.csv")
+    df.columns = df.columns.str.strip()
+
+    # --- Сайдбар ---
+    st.sidebar.title("Меню")
+    page = st.sidebar.radio("Оберіть сторінку:", [
+        "Головна",
+        "Ключові показники",
+        "Аналіз бонусів та компенсацій",
+        "Гендерна аналітика",
+        "Рейтинг співробітників",
+        "Аналіз ринку"
+    ])
+
+    # --- Фільтри ---
+    st.sidebar.title("Фільтри")
+    departments = st.sidebar.multiselect("Відділи:", sorted(df["department"].unique()))
+    if departments:
+        available_roles = sorted(df[df["department"].isin(departments)]["Role_ua"].unique())
+    else:
+        available_roles = sorted(df["Role_ua"].unique())
+    selected_roles = st.sidebar.multiselect("Посади:", available_roles)
+
+    salary_min, salary_max = int(df["base_salary"].min()), int(df["base_salary"].max())
+    salary_range = st.sidebar.slider("Діапазон базової зарплати:", salary_min, salary_max, (salary_min, salary_max), 1000)
+
+    filtered_df = df.copy()
+    if departments:
+        filtered_df = filtered_df[filtered_df["department"].isin(departments)]
+    if selected_roles:
+        filtered_df = filtered_df[filtered_df["Role_ua"].isin(selected_roles)]
+    filtered_df = filtered_df[(filtered_df["base_salary"] >= salary_range[0]) & (filtered_df["base_salary"] <= salary_range[1])]
+
+    if filtered_df.empty:
+        st.warning("За обраними фільтрами немає співробітників. Змініть параметри.")
+        return
+
+    # --- Відображення сторінок ---
     if page == "Головна":
-        show_page_description(page)
+        st.title("🏢 HR Analytics Dashboard")
+        st.subheader("Compensation & Benefits")
+
+        st.markdown("""
+        ### Ласкаво просимо!
+        Система призначена для аналізу зарплат, бонусів, компенсацій та пільг співробітників.
+        """)
+
+        st.divider()
+
+        # KPI
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("👥 Співробітників", len(filtered_df))
+        c2.metric("💰 Середня зарплата", f"{filtered_df['base_salary'].mean():,.0f} грн")
+        c3.metric("🎁 Середній бонус", f"{filtered_df['bonus'].mean():,.0f} грн")
+        c4.metric("💎 Середній повний пакет", f"{filtered_df['total_compensation'].mean():,.0f} грн")
+
+        st.divider()
+
+        left, right = st.columns(2)
+        with left:
+            st.success("### 📊 Ключові показники\n- Аналіз зарплат\n- Медіана\n- Бюджет компенсацій")
+            st.info("### 🎁 Бонуси та пільги\n- Аналіз бонусів\n- Медстрахування\n- Спорт\n- Remote")
+            st.warning("### 👩‍🦰👨 Гендерна аналітика\n- Середня зарплата\n- Бонуси\n- Гендерний розрив")
+
+        with right:
+            st.success("### 🏆 Рейтинг співробітників\n- ТОП працівників\n- Повний пакет")
+            st.info("### 📈 Аналіз ринку\n- Work.ua/DOU\n- Власні дослідження\n- Конкурентність")
+
+        st.divider()
+
+        st.subheader("📌 Розподіл співробітників по відділах")
+        dept_count = filtered_df["department"].value_counts().reset_index()
+        dept_count.columns = ["department", "count"]
+        fig = px.pie(dept_count, names="department", values="count", title="Структура компанії")
+        st.plotly_chart(fig, use_container_width=True)
+
+        st.divider()
+        st.success("👈 Використовуйте меню та фільтри зліва для переходу між розділами.")
 
     elif page == "Ключові показники":
-        show_page_description(page)
-        show_metrics(filtered_df)
+        st.subheader("Ключові показники")
+        st.dataframe(filtered_df)
 
     elif page == "Аналіз бонусів та компенсацій":
-        show_page_description(page)
-        show_bonus(filtered_df)
-        show_compensation(filtered_df)
-        show_benefits_analysis(filtered_df)
+        st.subheader("Аналіз бонусів та компенсацій")
+        fig = px.histogram(filtered_df, x="bonus", nbins=20, title="Розподіл бонусів")
+        st.plotly_chart(fig, use_container_width=True)
 
     elif page == "Гендерна аналітика":
-        show_page_description(page)
-        show_gender_gap(filtered_df)
+        st.subheader("Гендерна аналітика")
+        if "gender" in filtered_df.columns:
+            fig = px.bar(filtered_df, x="gender", y="base_salary", title="Середня зарплата за статтю")
+            st.plotly_chart(fig, use_container_width=True)
 
     elif page == "Рейтинг співробітників":
-        show_page_description(page)
-        show_top(filtered_df)
+        st.subheader("Рейтинг співробітників")
+        top_df = filtered_df.sort_values("total_compensation", ascending=False).head(10)
+        st.dataframe(top_df)
 
     elif page == "Аналіз ринку":
-        show_page_description(page)
-        show_market_analysis(filtered_df, df)
-
+        st.subheader("Аналіз ринку")
+        st.info("Тут буде інтеграція з Work.ua/DOU або власними даними.")
 
 if __name__ == "__main__":
     main()
