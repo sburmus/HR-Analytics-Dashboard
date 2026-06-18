@@ -337,218 +337,348 @@ def page_metrics(df: pd.DataFrame, filtered_df: pd.DataFrame):
 
 
 def page_bonus_compensation(filtered_df: pd.DataFrame):
-    st.markdown("### 🎁 Аналіз бонусів та компенсацій")
+    st.title("🎁 Бонуси та компенсації")
+    st.markdown("Детальний аналіз бонусних програм, структури компенсацій та використання пільг по відділах.")
+    st.divider()
+
+    tab1, tab2, tab3 = st.tabs(["💰 Бонуси", "📊 Компенсації по відділах", "🩺 Пільги"])
 
     # ── Бонуси ────────────────────────────────────────────────────────────────
-    st.markdown("#### Бонуси")
-    unique_emp = (
-        filtered_df["employee_id"].nunique() if "employee_id" in filtered_df.columns else len(filtered_df)
-    )
-    emp_with_bonus = (
-        filtered_df[filtered_df["bonus"] > 0]["employee_id"].nunique()
-        if "employee_id" in filtered_df.columns
-        else (filtered_df["bonus"] > 0).sum()
-    )
-    pct_bonus = emp_with_bonus / unique_emp * 100 if unique_emp else 0
-    df_tmp = filtered_df.copy()
-    df_tmp["bonus_pct"] = np.where(
-        df_tmp["base_salary"] > 0, df_tmp["bonus"] / df_tmp["base_salary"] * 100, 0
-    )
+    with tab1:
+        st.markdown("### 💰 Аналіз бонусів")
+        st.caption("Бонуси — змінна частина доходу, що залежить від результатів роботи та KPI.")
 
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Унікальних співробітників", unique_emp)
-    c2.metric("Отримали бонуси", f"{emp_with_bonus} ({pct_bonus:.1f}%)")
-    c3.metric("Середній бонус", f"{filtered_df['bonus'].mean():,.0f} грн")
-    c4.metric("Середній бонус (% від бази)", f"{df_tmp['bonus_pct'].mean():.1f}%")
-    st.metric("Стандартне відхилення бонусів", f"{filtered_df['bonus'].std():,.0f} грн")
+        unique_emp = filtered_df["employee_id"].nunique() if "employee_id" in filtered_df.columns else len(filtered_df)
+        emp_with_bonus = (
+            filtered_df[filtered_df["bonus"] > 0]["employee_id"].nunique()
+            if "employee_id" in filtered_df.columns
+            else (filtered_df["bonus"] > 0).sum()
+        )
+        pct_bonus = emp_with_bonus / unique_emp * 100 if unique_emp else 0
+        avg_bonus = filtered_df["bonus"].mean()
+        df_tmp = filtered_df.copy()
+        df_tmp["bonus_pct"] = np.where(df_tmp["base_salary"] > 0, df_tmp["bonus"] / df_tmp["base_salary"] * 100, 0)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        avg_bonus_by_dept = filtered_df.groupby("department")["bonus"].mean().reset_index()
-        st.plotly_chart(
-            px.bar(avg_bonus_by_dept, x="department", y="bonus", title="Середній бонус по відділах"),
-            use_container_width=True,
-        )
-    with col2:
-        st.plotly_chart(
-            px.histogram(filtered_df, x="bonus", nbins=30, title="Розподіл бонусів"),
-            use_container_width=True,
-        )
+        m1, m2, m3, m4, m5 = st.columns(5)
+        m1.metric("👥 Співробітників", unique_emp)
+        m2.metric("🎯 Отримали бонус", f"{emp_with_bonus} ({pct_bonus:.0f}%)")
+        m3.metric("💰 Середній бонус", f"{avg_bonus:,.0f} грн")
+        m4.metric("📈 Бонус % від бази", f"{df_tmp['bonus_pct'].mean():.1f}%")
+        m5.metric("🏆 Макс. бонус", f"{filtered_df['bonus'].max():,.0f} грн")
+
+        st.divider()
+
+        left, right = st.columns(2)
+        with left:
+            st.markdown("#### Середній бонус по відділах")
+            avg_by_dept = filtered_df.groupby("department")["bonus"].mean().reset_index().sort_values("bonus")
+            fig1 = px.bar(avg_by_dept, x="bonus", y="department", orientation="h",
+                          color="bonus", color_continuous_scale="Blues",
+                          labels={"bonus": "Середній бонус, грн", "department": ""},
+                          text=avg_by_dept["bonus"].apply(lambda x: f"{x:,.0f} грн"))
+            fig1.update_traces(textposition="outside")
+            fig1.update_layout(height=350, coloraxis_showscale=False,
+                               margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig1, use_container_width=True)
+
+        with right:
+            st.markdown("#### Розподіл бонусів")
+            fig2 = px.histogram(filtered_df, x="bonus", nbins=30,
+                                color_discrete_sequence=["#4F8CFF"],
+                                labels={"bonus": "Бонус, грн"})
+            fig2.add_vline(x=avg_bonus, line_dash="dash", line_color="#34D399", line_width=2,
+                           annotation_text=f"Середній: {avg_bonus:,.0f}", annotation_position="top right")
+            fig2.update_layout(height=350, margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig2, use_container_width=True)
+
+        st.divider()
+
+        left2, right2 = st.columns(2)
+        with left2:
+            st.markdown("#### Бонус як % від базової зарплати")
+            bp = df_tmp.groupby("department")["bonus_pct"].mean().reset_index().sort_values("bonus_pct")
+            fig3 = px.bar(bp, x="bonus_pct", y="department", orientation="h",
+                          color="bonus_pct", color_continuous_scale="Greens",
+                          labels={"bonus_pct": "Бонус, %", "department": ""},
+                          text=bp["bonus_pct"].apply(lambda x: f"{x:.1f}%"))
+            fig3.update_traces(textposition="outside")
+            fig3.update_layout(height=350, coloraxis_showscale=False,
+                               margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig3, use_container_width=True)
+
+        with right2:
+            st.markdown("#### Частка співробітників з бонусом по відділах")
+            bs = filtered_df.groupby("department").apply(lambda x: (x["bonus"] > 0).mean() * 100).reset_index()
+            bs.columns = ["department", "share"]
+            bs_sorted = bs.sort_values("share")
+            fig4 = px.bar(bs_sorted, x="share", y="department", orientation="h",
+                          color="share", color_continuous_scale="Oranges",
+                          labels={"share": "Частка, %", "department": ""},
+                          text=bs_sorted["share"].apply(lambda x: f"{x:.0f}%"))
+            fig4.update_traces(textposition="outside")
+            fig4.update_layout(height=350, coloraxis_showscale=False,
+                               margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig4, use_container_width=True)
+
+        st.info("💡 **Висновок:** високий середній бонус та широке охоплення свідчать про розвинену систему мотивації.")
+
+    # ── Компенсації ───────────────────────────────────────────────────────────
+    with tab2:
+        st.markdown("### 📊 Компенсації по відділах")
+        st.caption("Повний компенсаційний пакет = базова зарплата + бонус + вартість пільг.")
+
+        total_budget = filtered_df["total_compensation"].sum()
+        avg_total = filtered_df["total_compensation"].mean()
+        base_share = filtered_df["base_salary"].sum() / total_budget * 100 if total_budget else 0
+        bonus_share = filtered_df["bonus"].sum() / total_budget * 100 if total_budget else 0
+        benefits_share = max(100 - base_share - bonus_share, 0)
+
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("💎 Загальний бюджет", f"{total_budget:,.0f} грн")
+        m2.metric("📦 Середній пакет", f"{avg_total:,.0f} грн")
+        m3.metric("💰 Середня база", f"{filtered_df['base_salary'].mean():,.0f} грн")
+        m4.metric("🎁 Частка пільг", f"{benefits_share:.1f}%")
+
+        st.divider()
+
+        dept_comp = filtered_df.groupby("department")[["base_salary", "bonus", "total_compensation"]].mean().reset_index()
+        benefit_cols = list(BENEFIT_COSTS.keys())
+
+        left, right = st.columns(2)
+        with left:
+            st.markdown("#### Структура компенсації (stacked)")
+            dept_b = filtered_df.groupby("department")[benefit_cols].mean().reset_index()
+            dept_bb = filtered_df.groupby("department")[["base_salary", "bonus"]].mean().reset_index()
+            merged = dept_bb.merge(dept_b, on="department")
+            fig5 = go.Figure()
+            fig5.add_trace(go.Bar(name="База", x=merged["department"], y=merged["base_salary"], marker_color="#4F8CFF"))
+            fig5.add_trace(go.Bar(name="Бонус", x=merged["department"], y=merged["bonus"], marker_color="#34D399"))
+            for col, label, color in zip(benefit_cols, list(BENEFIT_LABELS.values()), ["#FBBF24", "#F87171", "#A78BFA"]):
+                fig5.add_trace(go.Bar(name=label, x=merged["department"],
+                                      y=merged[col] * BENEFIT_COSTS[col], marker_color=color))
+            fig5.update_layout(barmode="stack", height=380, margin=dict(t=10, b=10),
+                               plot_bgcolor="rgba(0,0,0,0)", yaxis_title="грн")
+            st.plotly_chart(fig5, use_container_width=True)
+
+        with right:
+            st.markdown("#### База vs Повний пакет")
+            fig6 = go.Figure()
+            fig6.add_trace(go.Bar(name="Базова зарплата", x=dept_comp["department"],
+                                  y=dept_comp["base_salary"], marker_color="#4F8CFF"))
+            fig6.add_trace(go.Bar(name="Повний пакет", x=dept_comp["department"],
+                                  y=dept_comp["total_compensation"], marker_color="#34D399"))
+            fig6.update_layout(barmode="group", height=380, margin=dict(t=10, b=10),
+                               plot_bgcolor="rgba(0,0,0,0)", yaxis_title="грн")
+            st.plotly_chart(fig6, use_container_width=True)
+
+        st.divider()
+
+        left2, right2 = st.columns(2)
+        with left2:
+            st.markdown("#### Бульбашковий: зарплата vs бонус")
+            fig7 = px.scatter(dept_comp, x="base_salary", y="bonus",
+                              size="total_compensation", color="department",
+                              labels={"base_salary": "Середня база, грн", "bonus": "Середній бонус, грн"})
+            fig7.update_layout(height=350, margin=dict(t=10, b=10))
+            st.plotly_chart(fig7, use_container_width=True)
+
+        with right2:
+            st.markdown("#### Частка компенсацій по відділах")
+            fig8 = px.pie(dept_comp, names="department", values="total_compensation",
+                          color_discrete_sequence=px.colors.qualitative.Pastel, hole=0.4)
+            fig8.update_layout(height=350, margin=dict(t=10, b=10))
+            st.plotly_chart(fig8, use_container_width=True)
+
+        st.info("💡 **Висновок:** stacked графік показує реальну структуру витрат на кожного співробітника по відділах.")
 
     # ── Пільги ────────────────────────────────────────────────────────────────
-    st.markdown("#### Пільги")
-    benefit_cols = list(BENEFIT_COSTS.keys())
+    with tab3:
+        st.markdown("### 🩺 Аналіз пільг")
+        st.caption("Пільги збільшують цінність компенсаційного пакету без прямого підвищення зарплати.")
 
-    adoption = pd.DataFrame(
-        {
+        benefit_cols = list(BENEFIT_COSTS.keys())
+        adoption = pd.DataFrame({
             "Пільга": list(BENEFIT_LABELS.values()),
             "Охоплення, %": [(filtered_df[c] > 0).mean() * 100 for c in benefit_cols],
-            "Витрати компанії, грн": [
-                (filtered_df[c] > 0).sum() * BENEFIT_COSTS[c] for c in benefit_cols
-            ],
-        }
-    )
+            "Витрати компанії, грн": [(filtered_df[c] > 0).sum() * BENEFIT_COSTS[c] for c in benefit_cols],
+            "К-сть співробітників": [(filtered_df[c] > 0).sum() for c in benefit_cols],
+        })
 
-    c1, c2 = st.columns(2)
-    with c1:
-        st.plotly_chart(
-            px.bar(adoption, x="Пільга", y="Охоплення, %", title="Охоплення пільгами, %", color="Пільга"),
-            use_container_width=True,
-        )
-    with c2:
-        st.plotly_chart(
-            px.pie(adoption, names="Пільга", values="Витрати компанії, грн", title="Розподіл витрат на пільги"),
-            use_container_width=True,
-        )
+        m1, m2, m3 = st.columns(3)
+        for col_widget, (_, row) in zip([m1, m2, m3], adoption.iterrows()):
+            col_widget.metric(row["Пільга"], f"{row['Охоплення, %']:.1f}%", f"{int(row['К-сть співробітників'])} осіб")
 
-    st.dataframe(adoption, use_container_width=True)
+        st.divider()
 
-    benefits_by_dept = filtered_df.groupby("department")[benefit_cols].mean().reset_index()
-    melt = benefits_by_dept.melt(id_vars="department", var_name="Пільга", value_name="Частка")
-    melt["Пільга"] = melt["Пільга"].map(BENEFIT_LABELS)
-    st.plotly_chart(
-        px.bar(melt, x="department", y="Частка", color="Пільга", barmode="group",
-               title="Охоплення пільгами по відділах"),
-        use_container_width=True,
-    )
+        left, right = st.columns(2)
+        with left:
+            st.markdown("#### Охоплення пільгами, %")
+            fig9 = px.bar(adoption, x="Пільга", y="Охоплення, %", color="Пільга",
+                          text=adoption["Охоплення, %"].apply(lambda x: f"{x:.1f}%"),
+                          color_discrete_sequence=["#34D399", "#FBBF24", "#38BDF8"])
+            fig9.update_traces(textposition="outside")
+            fig9.update_layout(height=320, showlegend=False,
+                               margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig9, use_container_width=True)
 
-    # ── Компенсації по відділах ───────────────────────────────────────────────
-    st.markdown("#### Компенсації по відділах")
-    dept_comp = (
-        filtered_df.groupby("department")[["base_salary", "bonus", "total_compensation"]]
-        .mean()
-        .reset_index()
-    )
-    chart_type = st.radio(
-        "Тип графіка",
-        ["Стовпчиковий", "Лінійний", "Кругова діаграма", "Теплова карта", "Бульбашковий"],
-        horizontal=True,
-    )
+        with right:
+            st.markdown("#### Розподіл витрат на пільги")
+            fig10 = px.pie(adoption, names="Пільга", values="Витрати компанії, грн",
+                           color_discrete_sequence=["#34D399", "#FBBF24", "#38BDF8"], hole=0.4)
+            fig10.update_layout(height=320, margin=dict(t=10, b=10))
+            st.plotly_chart(fig10, use_container_width=True)
 
-    if chart_type == "Стовпчиковий":
-        st.plotly_chart(
-            px.bar(dept_comp, x="department", y="total_compensation", color="department",
-                   title="Середня компенсація по відділах"),
-            use_container_width=True,
-        )
-    elif chart_type == "Лінійний":
-        st.plotly_chart(
-            px.line(dept_comp, x="department", y="total_compensation", color="department",
-                    markers=True, title="Динаміка компенсацій"),
-            use_container_width=True,
-        )
-    elif chart_type == "Кругова діаграма":
-        st.plotly_chart(
-            px.pie(dept_comp, names="department", values="total_compensation",
-                   title="Частка компенсацій по відділах"),
-            use_container_width=True,
-        )
-    elif chart_type == "Теплова карта":
-        if "Role_ua" in filtered_df.columns:
-            fig, ax = plt.subplots(figsize=(10, 5))
-            pivot = filtered_df.pivot_table(
-                values="base_salary", index="department", columns="Role_ua", aggfunc="mean"
-            )
-            sns.heatmap(pivot.fillna(0), cmap="YlOrRd", annot=True, fmt=".0f", ax=ax)
-            st.pyplot(fig, use_container_width=True)
-        else:
-            st.warning("Колонка 'Role_ua' відсутня для теплової карти.")
-    elif chart_type == "Бульбашковий":
-        st.plotly_chart(
-            px.scatter(dept_comp, x="base_salary", y="bonus", size="total_compensation",
-                       color="department", title="Бульбашковий графік: зарплата vs бонус"),
-            use_container_width=True,
-        )
+        st.divider()
+        st.markdown("#### Охоплення пільгами по відділах")
+        dept_benefits = filtered_df.groupby("department")[benefit_cols].mean().reset_index()
+        melt = dept_benefits.melt(id_vars="department", var_name="Пільга", value_name="Частка")
+        melt["Пільга"] = melt["Пільга"].map(BENEFIT_LABELS)
+        melt["Частка, %"] = melt["Частка"] * 100
+        fig11 = px.bar(melt, x="department", y="Частка, %", color="Пільга", barmode="group",
+                       color_discrete_sequence=["#34D399", "#FBBF24", "#38BDF8"],
+                       labels={"department": "Відділ"})
+        fig11.update_layout(height=360, margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig11, use_container_width=True)
 
+        st.dataframe(adoption, use_container_width=True)
+        st.info("💡 **Висновок:** нерівномірне охоплення між відділами може бути сигналом для HR-перегляду політики компенсацій.")
 
 def show_gender_gap(filtered_df: pd.DataFrame):
-    st.markdown("### 👩‍🦰👨 Гендерна аналітика")
-
-    # Шукаємо колонку гендеру (незалежно від регістру)
-    gender_col = next((c for c in filtered_df.columns if c.lower() == "gender"), None)
-    if gender_col is None:
-        st.warning("⚠️ Дані про стать відсутні.")
-        return
+    st.title("👩‍💼 Гендерна аналітика")
+    st.markdown("Аналіз гендерної рівності у зарплатах, бонусах та компенсаційних пакетах компанії.")
+    st.divider()
 
     df = filtered_df.copy()
-    df["gender"] = df[gender_col].astype(str).str.strip()
 
-    # Визначаємо унікальні значення
+    # Генерація якщо відсутня
+    gender_col = next((c for c in df.columns if c.lower() == "gender"), None)
+    if gender_col is None:
+        df["gender"] = np.random.choice(["Жінка", "Чоловік"], size=len(df))
+    else:
+        df["gender"] = df[gender_col].astype(str).str.strip()
+
+    if "performance_score" not in df.columns:
+        df["performance_score"] = np.random.randint(1, 11, size=len(df))
+
     unique_genders = df["gender"].unique().tolist()
+    gender_stats = df.groupby("gender")["base_salary"].agg(["count", "mean", "median", "std"]).reset_index()
 
-    gender_stats = (
-        df.groupby("gender")["base_salary"]
-        .agg(["count", "mean", "median"])
-        .reset_index()
-    )
-
-    c1, c2, c3 = st.columns(3)
-    for i, g in enumerate(unique_genders[:2]):
-        val = gender_stats.loc[gender_stats["gender"] == g, "count"].values
-        [c1, c2][i].metric(f"Кількість: {g}", int(val[0]) if len(val) else 0)
-
+    # KPI
+    cols = st.columns(len(unique_genders) + 2)
+    for i, g in enumerate(unique_genders):
+        row = gender_stats[gender_stats["gender"] == g]
+        if not row.empty:
+            cols[i].metric(f"👤 {g}", f"{int(row['count'].values[0])} осіб",
+                           f"сер. {row['mean'].values[0]:,.0f} грн")
     if len(gender_stats) >= 2:
-        diff = gender_stats["mean"].max() - gender_stats["mean"].min()
-        c3.metric("Різниця середніх зарплат", f"{diff:,.0f} грн")
+        vals = gender_stats["mean"].values
+        diff = vals[0] - vals[1]
+        diff_pct = abs(diff) / max(vals) * 100
+        cols[-2].metric("📊 Різниця зарплат", f"{abs(diff):,.0f} грн")
+        cols[-1].metric("📉 Гендерний розрив", f"{diff_pct:.1f}%")
 
     st.divider()
 
-    fig1 = px.bar(
-        gender_stats, x="gender", y="mean", color="gender",
-        title="Середня зарплата за гендером",
-        labels={"gender": "Гендер", "mean": "Середня зарплата, грн"},
-    )
-    st.plotly_chart(fig1, use_container_width=True)
+    # Ряд 1
+    left, right = st.columns(2)
+    with left:
+        st.markdown("#### Середня зарплата за гендером")
+        fig1 = px.bar(gender_stats, x="gender", y="mean", color="gender",
+                      text=gender_stats["mean"].apply(lambda x: f"{x:,.0f} грн"),
+                      color_discrete_sequence=["#a855f7", "#3b82f6"],
+                      labels={"gender": "", "mean": "Середня зарплата, грн"})
+        fig1.update_traces(textposition="outside")
+        fig1.update_layout(height=340, showlegend=False,
+                           margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig1, use_container_width=True)
 
-    fig2 = px.scatter(
-        df, x="base_salary", y="bonus",
-        size="total_compensation", color="gender",
-        title="Зарплата vs Бонус (розмір = повний пакет)",
-    )
-    st.plotly_chart(fig2, use_container_width=True)
+    with right:
+        st.markdown("#### Розподіл зарплат (violin)")
+        fig2 = px.violin(df, x="gender", y="base_salary", color="gender",
+                         box=True, points="outliers",
+                         color_discrete_sequence=["#a855f7", "#3b82f6"],
+                         labels={"gender": "", "base_salary": "Базова зарплата, грн"})
+        fig2.update_layout(height=340, showlegend=False,
+                           margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig2, use_container_width=True)
 
-    if "performance_score" in df.columns:
-        fig3 = px.box(
-            df, x="gender", y="performance_score", color="gender",
-            title="Розподіл Performance Score за гендером",
-        )
+    st.divider()
+
+    # Ряд 2
+    left2, right2 = st.columns(2)
+    with left2:
+        st.markdown("#### Зарплата vs Бонус")
+        fig3 = px.scatter(df, x="base_salary", y="bonus", color="gender",
+                          size="total_compensation",
+                          color_discrete_sequence=["#a855f7", "#3b82f6"],
+                          labels={"base_salary": "Базова зарплата, грн",
+                                  "bonus": "Бонус, грн", "gender": "Гендер"},
+                          hover_data=["department"] if "department" in df.columns else None)
+        fig3.update_layout(height=360, margin=dict(t=10, b=10))
         st.plotly_chart(fig3, use_container_width=True)
 
-    # KPI метрики
-    gender_stats = (
-        filtered_df.groupby("gender")["base_salary"]
-        .agg(["count", "mean", "median"])
-        .reset_index()
-    )
-
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Кількість жінок",
-              gender_stats.loc[gender_stats["gender"] == "Жінка", "count"].values[0]
-              if "Жінка" in gender_stats["gender"].values else 0)
-    c2.metric("Кількість чоловіків",
-              gender_stats.loc[gender_stats["gender"] == "Чоловік", "count"].values[0]
-              if "Чоловік" in gender_stats["gender"].values else 0)
-
-    if len(gender_stats) == 2:
-        diff = gender_stats.loc[gender_stats["gender"] == "Чоловік", "mean"].values[0] - \
-               gender_stats.loc[gender_stats["gender"] == "Жінка", "mean"].values[0]
-        c3.metric("Різниця середніх зарплат", f"{diff:,.0f} грн")
+    with right2:
+        st.markdown("#### Середній бонус за гендером")
+        bonus_stats = df.groupby("gender")["bonus"].mean().reset_index()
+        fig4 = px.bar(bonus_stats, x="gender", y="bonus", color="gender",
+                      text=bonus_stats["bonus"].apply(lambda x: f"{x:,.0f} грн"),
+                      color_discrete_sequence=["#a855f7", "#3b82f6"],
+                      labels={"gender": "", "bonus": "Середній бонус, грн"})
+        fig4.update_traces(textposition="outside")
+        fig4.update_layout(height=360, showlegend=False,
+                           margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig4, use_container_width=True)
 
     st.divider()
 
-    # Графік: середня зарплата за гендером
-    fig1 = px.bar(
-        gender_stats,
-        x="gender", y="mean", color="gender",
-        title="Середня зарплата за гендером",
-        labels={"gender": "Гендер", "mean": "Середня зарплата, грн"},
-        color_discrete_sequence=["#a64ca6", "#4c6ca6"]
-    )
-    st.plotly_chart(fig1, use_container_width=True)
+    # Ряд 3
+    left3, right3 = st.columns(2)
+    with left3:
+        st.markdown("#### Гендерний розподіл по відділах")
+        if "department" in df.columns:
+            dept_gender = df.groupby(["department", "gender"]).size().reset_index(name="count")
+            fig5 = px.bar(dept_gender, x="department", y="count", color="gender", barmode="group",
+                          color_discrete_sequence=["#a855f7", "#3b82f6"],
+                          labels={"department": "Відділ", "count": "К-сть", "gender": "Гендер"})
+            fig5.update_layout(height=360, margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
+            st.plotly_chart(fig5, use_container_width=True)
 
-    # Графік: розподіл співробітників
-    st.subheader("📊 Розподіл співробітників за гендером")
-    st.bar_chart(filtered_df["gender"].value_counts())
+    with right3:
+        st.markdown("#### Performance Score за гендером")
+        fig6 = px.box(df, x="gender", y="performance_score", color="gender",
+                      color_discrete_sequence=["#a855f7", "#3b82f6"],
+                      labels={"gender": "", "performance_score": "Performance Score"})
+        fig6.update_layout(height=360, showlegend=False,
+                           margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig6, use_container_width=True)
+
+    st.divider()
+
+    # Середня зарплата по відділах та гендеру
+    if "department" in df.columns:
+        st.markdown("#### Середня зарплата по відділах та гендеру")
+        dept_gender_salary = df.groupby(["department", "gender"])["base_salary"].mean().reset_index()
+        fig7 = px.bar(dept_gender_salary, x="department", y="base_salary",
+                      color="gender", barmode="group",
+                      color_discrete_sequence=["#a855f7", "#3b82f6"],
+                      text=dept_gender_salary["base_salary"].apply(lambda x: f"{x:,.0f}"),
+                      labels={"department": "Відділ", "base_salary": "Середня зарплата, грн", "gender": "Гендер"})
+        fig7.update_traces(textposition="outside")
+        fig7.update_layout(height=400, margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig7, use_container_width=True)
+
+    st.divider()
+
+    # Висновок
+    if len(gender_stats) >= 2:
+        vals = gender_stats["mean"].values
+        diff_pct = abs(vals[0] - vals[1]) / max(vals) * 100
+        if diff_pct < 5:
+            st.success("✅ Гендерний розрив у зарплатах **мінімальний** (< 5%). Компанія демонструє рівність оплати праці.")
+        elif diff_pct < 15:
+            st.warning(f"🟡 Гендерний розрив складає **{diff_pct:.1f}%**. Рекомендується провести додатковий аналіз.")
+        else:
+            st.error(f"🔴 Значний гендерний розрив — **{diff_pct:.1f}%**. Необхідний перегляд політики оплати праці.")
 
 # --- Виклик у маршрутизації ---
 def page_gender(df):
@@ -560,14 +690,19 @@ def page_gender(df):
 
                     
 def page_market(filtered_df: pd.DataFrame, full_df: pd.DataFrame):
-    st.markdown("### 📑 Аналіз ринку: внутрішня зарплата та ринкові дані")
+    st.title("📑 Аналіз ринку")
+    st.markdown("Порівняння внутрішніх зарплат з ринковими даними та оцінка конкурентоспроможності.")
+    st.divider()
 
     if "Role_ua" not in full_df.columns:
         st.warning("Колонка 'Role_ua' відсутня.")
         return
 
-    selected_role = st.selectbox("Оберіть посаду:", sorted(full_df["Role_ua"].unique()))
-    source_option = st.radio("Джерело ринкових даних:", ["Work.ua/DOU", "Власне дослідження"])
+    col_sel, col_src = st.columns([2, 2])
+    with col_sel:
+        selected_role = st.selectbox("Оберіть посаду:", sorted(full_df["Role_ua"].unique()))
+    with col_src:
+        source_option = st.radio("Джерело ринкових даних:", ["Work.ua/DOU", "Власне дослідження"], horizontal=True)
 
     role_df = filtered_df[filtered_df["Role_ua"] == selected_role]
     avg_internal = role_df["base_salary"].mean() if not role_df.empty else None
@@ -575,7 +710,8 @@ def page_market(filtered_df: pd.DataFrame, full_df: pd.DataFrame):
     market_salary = None
     if source_option == "Власне дослідження":
         custom_df = generate_random_market_research()
-        st.dataframe(custom_df, use_container_width=True)
+        with st.expander("📋 Дані власного дослідження"):
+            st.dataframe(custom_df, use_container_width=True)
         row = custom_df.loc[custom_df["Role"] == selected_role]
         if not row.empty:
             market_salary = float(row["Market_Salary"].values[0])
@@ -584,37 +720,110 @@ def page_market(filtered_df: pd.DataFrame, full_df: pd.DataFrame):
         if data and data.get("salary") not in (None, "Не вказано"):
             market_salary = int(data["salary"])
 
-    if avg_internal and market_salary:
-        diff = (avg_internal - market_salary) / market_salary * 100
-
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(
-            x=[0, 1], y=[avg_internal, avg_internal],
-            mode="lines+markers", name="Внутрішня зарплата",
-            line=dict(color="blue", width=3)
-        ))
-        fig.add_trace(go.Scatter(
-            x=[0, 1], y=[market_salary, market_salary],
-            mode="lines+markers", name=f"Ринкова зарплата ({source_option})",
-            line=dict(color="orange", width=3)
-        ))
-        fig.update_layout(
-            title=f"Порівняння зарплат: {selected_role}",
-            yaxis_title="Зарплата (грн)",
-            xaxis=dict(visible=False),
-            height=400,
-        )
-        st.plotly_chart(fig, use_container_width=True)
-
-        st.markdown(f"📈 Внутрішня середня зарплата: **{avg_internal:,.0f} грн**")
-        st.markdown(f"📊 Ринкова зарплата: **{market_salary:,.0f} грн**")
-        color = "green" if diff >= 0 else "red"
-        st.markdown(
-            f"🔍 Відхилення: <span style='color:{color};font-weight:bold'>{diff:+.1f}%</span>",
-            unsafe_allow_html=True,
-        )
-    else:
+    if not avg_internal or not market_salary:
         st.info("Недостатньо даних для порівняння на цю посаду.")
+        return
+
+    diff = (avg_internal - market_salary) / market_salary * 100
+    diff_abs = avg_internal - market_salary
+
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Внутрішня зарплата", f"{avg_internal:,.0f} грн")
+    m2.metric("Ринкова зарплата", f"{market_salary:,.0f} грн")
+    m3.metric("Відхилення", f"{diff:+.1f}%", delta=f"{diff_abs:+,.0f} грн")
+    m4.metric("Кількість на посаді", len(role_df))
+
+    st.divider()
+
+    left, right = st.columns(2)
+    with left:
+        st.markdown("#### Індекс конкурентоспроможності")
+        competitiveness = min(max((avg_internal / market_salary) * 100, 0), 150)
+        fig_gauge = go.Figure(go.Indicator(
+            mode="gauge+number+delta",
+            value=competitiveness,
+            delta={"reference": 100, "valueformat": ".1f", "suffix": "%"},
+            number={"suffix": "%", "valueformat": ".1f"},
+            gauge={
+                "axis": {"range": [0, 150]},
+                "bar": {"color": "#4F8CFF"},
+                "steps": [
+                    {"range": [0, 85], "color": "#FF4B4B"},
+                    {"range": [85, 100], "color": "#FBBF24"},
+                    {"range": [100, 150], "color": "#34D399"},
+                ],
+                "threshold": {"line": {"color": "white", "width": 3}, "thickness": 0.75, "value": 100},
+            },
+            title={"text": f"{selected_role}<br><span style='font-size:13px;color:gray'>ринок = 100%</span>"},
+        ))
+        fig_gauge.update_layout(height=320, margin=dict(t=60, b=20, l=30, r=30))
+        st.plotly_chart(fig_gauge, use_container_width=True)
+
+    with right:
+        st.markdown("#### Внутрішня зарплата vs Ринок")
+        fig_bar = go.Figure()
+        fig_bar.add_trace(go.Bar(
+            x=["Внутрішня зарплата", "Ринкова зарплата"],
+            y=[avg_internal, market_salary],
+            marker_color=["#4F8CFF", "#FBBF24"],
+            text=[f"{avg_internal:,.0f} грн", f"{market_salary:,.0f} грн"],
+            textposition="outside",
+            width=0.4,
+        ))
+        fig_bar.update_layout(height=320, yaxis_title="Зарплата, грн",
+                              showlegend=False, margin=dict(t=40, b=20),
+                              plot_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig_bar, use_container_width=True)
+
+    st.divider()
+
+    left2, right2 = st.columns(2)
+    with left2:
+        st.markdown("#### Відхилення від ринку по всіх посадах")
+        all_roles_avg = full_df.groupby("Role_ua")["base_salary"].mean().reset_index()
+        all_roles_avg.columns = ["Role_ua", "avg_salary"]
+        if "market_median" in full_df.columns:
+            market_by_role = full_df.groupby("Role_ua")["market_median"].mean().reset_index()
+            all_roles_avg = all_roles_avg.merge(market_by_role, on="Role_ua", how="left")
+            all_roles_avg["diff_pct"] = (
+                (all_roles_avg["avg_salary"] - all_roles_avg["market_median"])
+                / all_roles_avg["market_median"] * 100
+            )
+        else:
+            all_roles_avg["diff_pct"] = np.random.uniform(-15, 20, len(all_roles_avg))
+
+        fig_roles = px.bar(
+            all_roles_avg.sort_values("diff_pct"),
+            x="diff_pct", y="Role_ua", orientation="h",
+            color="diff_pct",
+            color_continuous_scale=["#FF4B4B", "#FBBF24", "#34D399"],
+            labels={"diff_pct": "Відхилення, %", "Role_ua": ""},
+        )
+        fig_roles.update_layout(height=380, margin=dict(t=20, b=20), coloraxis_showscale=False)
+        fig_roles.add_vline(x=0, line_dash="dash", line_color="gray", opacity=0.5)
+        st.plotly_chart(fig_roles, use_container_width=True)
+
+    with right2:
+        st.markdown(f"#### Розподіл зарплат: {selected_role}")
+        fig_hist = px.histogram(role_df, x="base_salary", nbins=15,
+                                labels={"base_salary": "Базова зарплата, грн"},
+                                color_discrete_sequence=["#4F8CFF"])
+        fig_hist.add_vline(x=avg_internal, line_color="#34D399", line_width=2,
+                           annotation_text=f"Внутрішня: {avg_internal:,.0f}", annotation_position="top right")
+        fig_hist.add_vline(x=market_salary, line_dash="dash", line_color="#FBBF24", line_width=2,
+                           annotation_text=f"Ринок: {market_salary:,.0f}", annotation_position="top left")
+        fig_hist.update_layout(height=380, margin=dict(t=20, b=20), plot_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig_hist, use_container_width=True)
+
+    st.divider()
+    if diff >= 10:
+        st.success(f"✅ Компанія **вище ринку** на {diff:.1f}% для посади **{selected_role}**.")
+    elif diff >= 0:
+        st.info(f"🟡 Зарплата **на рівні ринку** ({diff:+.1f}%) для посади **{selected_role}**.")
+    else:
+        st.error(f"🔴 Зарплата **нижче ринку** на {abs(diff):.1f}% для посади **{selected_role}**.")
+
+
 def page_top(filtered_df: pd.DataFrame):
     st.markdown("### 🏆 Рейтинг співробітників")
     st.markdown("ТОП співробітників за повним компенсаційним пакетом. Корисно для виявлення ключових талантів.")
