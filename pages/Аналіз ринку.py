@@ -7,28 +7,24 @@ from app import add_total_compensation, get_market_data, generate_random_market_
 
 
 def main():
-    st.set_page_config(page_title="📑 Аналіз ринку", layout="wide")
-
     st.title("📑 Аналіз ринку")
     st.markdown("Порівняння внутрішніх зарплат з ринковими даними та оцінка конкурентоспроможності компанії.")
     st.divider()
 
-    # ── Завантаження даних ────────────────────────────────────────────────────
+    # Завантаження даних
     df = pd.read_csv("compensation.csv")
     df.columns = df.columns.str.strip()
-
-    if "market_median" not in df.columns and "base_salary" in df.columns:
+    if "market_median" not in df.columns:
         df["market_median"] = (df["base_salary"] * np.random.uniform(0.85, 1.2, size=len(df))).astype(int)
     if "employee_id" not in df.columns and "id" in df.columns:
         df["employee_id"] = df["id"]
-
     df = add_total_compensation(df)
 
     if "Role_ua" not in df.columns:
         st.warning("Колонка 'Role_ua' відсутня.")
         return
 
-    # ── Фільтри ───────────────────────────────────────────────────────────────
+    # Фільтри
     col_sel, col_src = st.columns([2, 2])
     with col_sel:
         selected_role = st.selectbox("Оберіть посаду:", sorted(df["Role_ua"].unique()))
@@ -38,7 +34,7 @@ def main():
     role_df = df[df["Role_ua"] == selected_role]
     avg_internal = role_df["base_salary"].mean() if not role_df.empty else None
 
-    # ── Отримання ринкової зарплати ───────────────────────────────────────────
+    # Ринкова зарплата
     market_salary = None
     if source_option == "Власне дослідження":
         custom_df = generate_random_market_research()
@@ -59,21 +55,19 @@ def main():
     diff = (avg_internal - market_salary) / market_salary * 100
     diff_abs = avg_internal - market_salary
 
-    # ── KPI метрики ───────────────────────────────────────────────────────────
+    # KPI метрики
     st.divider()
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Внутрішня зарплата", f"{avg_internal:,.0f} грн")
     m2.metric("Ринкова зарплата", f"{market_salary:,.0f} грн")
-    m3.metric("Відхилення", f"{diff:+.1f}%", delta=f"{diff_abs:+,.0f} грн",
-              delta_color="normal")
-    m4.metric("Кількість на цій посаді", len(role_df))
+    m3.metric("Відхилення", f"{diff:+.1f}%", delta=f"{diff_abs:+,.0f} грн")
+    m4.metric("Кількість на посаді", len(role_df))
 
     st.divider()
 
-    # ── Два графіки поряд ─────────────────────────────────────────────────────
+    # Ряд 1: Gauge + Bar
     left, right = st.columns(2)
 
-    # Графік 1: Gauge — наскільки конкурентна зарплата
     with left:
         st.markdown("#### Індекс конкурентоспроможності")
         competitiveness = min(max((avg_internal / market_salary) * 100, 0), 150)
@@ -83,25 +77,20 @@ def main():
             delta={"reference": 100, "valueformat": ".1f", "suffix": "%"},
             number={"suffix": "%", "valueformat": ".1f"},
             gauge={
-                "axis": {"range": [0, 150], "tickwidth": 1},
+                "axis": {"range": [0, 150]},
                 "bar": {"color": "#4F8CFF"},
                 "steps": [
                     {"range": [0, 85], "color": "#FF4B4B"},
                     {"range": [85, 100], "color": "#FBBF24"},
                     {"range": [100, 150], "color": "#34D399"},
                 ],
-                "threshold": {
-                    "line": {"color": "white", "width": 3},
-                    "thickness": 0.75,
-                    "value": 100,
-                },
+                "threshold": {"line": {"color": "white", "width": 3}, "thickness": 0.75, "value": 100},
             },
             title={"text": f"{selected_role}<br><span style='font-size:13px;color:gray'>ринок = 100%</span>"},
         ))
         fig_gauge.update_layout(height=320, margin=dict(t=60, b=20, l=30, r=30))
         st.plotly_chart(fig_gauge, use_container_width=True)
 
-    # Графік 2: Bar — порівняння внутрішня vs ринок
     with right:
         st.markdown("#### Внутрішня зарплата vs Ринок")
         fig_bar = go.Figure()
@@ -114,72 +103,61 @@ def main():
             width=0.4,
         ))
         fig_bar.update_layout(
-            height=320,
-            yaxis_title="Зарплата, грн",
-            showlegend=False,
-            margin=dict(t=40, b=20),
+            height=320, yaxis_title="Зарплата, грн",
+            showlegend=False, margin=dict(t=40, b=20),
             plot_bgcolor="rgba(0,0,0,0)",
         )
         st.plotly_chart(fig_bar, use_container_width=True)
 
     st.divider()
 
-    # ── Два графіки поряд (другий ряд) ───────────────────────────────────────
+    # Ряд 2: Відхилення по всіх посадах + Розподіл зарплат
     left2, right2 = st.columns(2)
 
-    # Графік 3: Розподіл зарплат по всіх посадах vs ринок
     with left2:
-        st.markdown("#### Порівняння всіх посад з ринком")
+        st.markdown("#### Відхилення від ринку по всіх посадах")
         all_roles_avg = df.groupby("Role_ua")["base_salary"].mean().reset_index()
         all_roles_avg.columns = ["Role_ua", "avg_salary"]
-
-        # Якщо є market_median у df — використовуємо
-        if "market_median" in df.columns:
-            market_by_role = df.groupby("Role_ua")["market_median"].mean().reset_index()
-            all_roles_avg = all_roles_avg.merge(market_by_role, on="Role_ua", how="left")
-            all_roles_avg["diff_pct"] = (all_roles_avg["avg_salary"] - all_roles_avg["market_median"]) / all_roles_avg["market_median"] * 100
-        else:
-            all_roles_avg["diff_pct"] = np.random.uniform(-15, 20, len(all_roles_avg))
-
-        all_roles_avg["color"] = all_roles_avg["diff_pct"].apply(lambda x: "#34D399" if x >= 0 else "#FF4B4B")
+        market_by_role = df.groupby("Role_ua")["market_median"].mean().reset_index()
+        all_roles_avg = all_roles_avg.merge(market_by_role, on="Role_ua", how="left")
+        all_roles_avg["diff_pct"] = (
+            (all_roles_avg["avg_salary"] - all_roles_avg["market_median"])
+            / all_roles_avg["market_median"] * 100
+        )
         fig_roles = px.bar(
             all_roles_avg.sort_values("diff_pct"),
-            x="diff_pct", y="Role_ua",
-            orientation="h",
+            x="diff_pct", y="Role_ua", orientation="h",
             color="diff_pct",
             color_continuous_scale=["#FF4B4B", "#FBBF24", "#34D399"],
-            labels={"diff_pct": "Відхилення від ринку, %", "Role_ua": ""},
-            title="Відхилення від ринку по посадах",
+            labels={"diff_pct": "Відхилення, %", "Role_ua": ""},
         )
-        fig_roles.update_layout(height=360, margin=dict(t=40, b=20), coloraxis_showscale=False)
-        fig_roles.add_vline(x=0, line_dash="dash", line_color="white", opacity=0.5)
+        fig_roles.update_layout(height=380, margin=dict(t=20, b=20), coloraxis_showscale=False)
+        fig_roles.add_vline(x=0, line_dash="dash", line_color="gray", opacity=0.5)
         st.plotly_chart(fig_roles, use_container_width=True)
 
-    # Графік 4: Розподіл зарплат по обраній посаді
     with right2:
         st.markdown(f"#### Розподіл зарплат: {selected_role}")
         fig_hist = px.histogram(
             role_df, x="base_salary", nbins=15,
-            title=f"Розподіл зарплат на посаді {selected_role}",
             labels={"base_salary": "Базова зарплата, грн"},
             color_discrete_sequence=["#4F8CFF"],
         )
-        fig_hist.add_vline(x=avg_internal, line_dash="solid", line_color="#34D399",
+        fig_hist.add_vline(x=avg_internal, line_color="#34D399", line_width=2,
                            annotation_text=f"Внутрішня: {avg_internal:,.0f}", annotation_position="top right")
-        fig_hist.add_vline(x=market_salary, line_dash="dash", line_color="#FBBF24",
+        fig_hist.add_vline(x=market_salary, line_dash="dash", line_color="#FBBF24", line_width=2,
                            annotation_text=f"Ринок: {market_salary:,.0f}", annotation_position="top left")
-        fig_hist.update_layout(height=360, margin=dict(t=40, b=20),
-                               plot_bgcolor="rgba(0,0,0,0)")
+        fig_hist.update_layout(height=380, margin=dict(t=20, b=20), plot_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig_hist, use_container_width=True)
 
     st.divider()
 
-    # ── Висновок ──────────────────────────────────────────────────────────────
+    # Висновок
     if diff >= 10:
-        st.success(f"✅ Компанія **вище ринку** на {diff:+.1f}% для посади {selected_role}. Зарплата конкурентна.")
+        st.success(f"✅ Компанія **вище ринку** на {diff:.1f}% для посади **{selected_role}**.")
     elif diff >= 0:
-        st.info(f"🟡 Зарплата **на рівні ринку** ({diff:+.1f}%) для посади {selected_role}.")
+        st.info(f"🟡 Зарплата **на рівні ринку** ({diff:+.1f}%) для посади **{selected_role}**.")
     else:
-        st.error(f"🔴 Зарплата **нижче ринку** на {abs(diff):.1f}% для посади {selected_role}. Рекомендується перегляд.")
+        st.error(f"🔴 Зарплата **нижче ринку** на {abs(diff):.1f}% для посади **{selected_role}**. Рекомендується перегляд.")
 
-    main()
+
+main()
