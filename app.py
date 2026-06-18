@@ -63,6 +63,144 @@ def convert_df_to_excel(df: pd.DataFrame) -> bytes:
     return output.getvalue()
 
 
+def inject_metrics_css():
+    """Стилі тільки для сторінки 'Ключові показники'."""
+    st.markdown(
+        """
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+        .kpi-hero {
+            background: linear-gradient(135deg, #16203A 0%, #0E1525 100%);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 18px;
+            padding: 28px 32px;
+            margin-bottom: 20px;
+        }
+        .kpi-hero-label {
+            font-family: 'Inter', sans-serif;
+            color: #8B96B2;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 6px;
+        }
+        .kpi-hero-value {
+            font-family: 'Sora', sans-serif;
+            color: #F4F7FF;
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.15;
+        }
+        .kpi-hero-sub {
+            font-family: 'Inter', sans-serif;
+            color: #6E7A99;
+            font-size: 13.5px;
+            margin-top: 4px;
+        }
+        .mix-bar {
+            display: flex;
+            height: 14px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 18px;
+            background: rgba(255,255,255,0.05);
+        }
+        .mix-seg { height: 100%; }
+        .mix-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12.5px;
+            color: #9AA5C4;
+        }
+        .mix-dot {
+            display: inline-block;
+            width: 9px; height: 9px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .kpi-card {
+            background: #141A2B;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 18px 20px;
+            height: 100%;
+            margin-bottom: 14px;
+        }
+        .kpi-card .icon { font-size: 19px; margin-bottom: 8px; opacity: .9; }
+        .kpi-card .label {
+            font-family: 'Inter', sans-serif;
+            color: #7E89A8;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 4px;
+        }
+        .kpi-card .value {
+            font-family: 'Sora', sans-serif;
+            color: #F4F7FF;
+            font-size: 23px;
+            font-weight: 700;
+        }
+        .coverage-row { margin-bottom: 14px; }
+        .coverage-label {
+            font-family: 'Inter', sans-serif;
+            color: #C3CBE0;
+            font-size: 13.5px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        .coverage-track {
+            height: 9px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .coverage-fill { height: 100%; border-radius: 6px; }
+        .section-title {
+            font-family: 'Inter', sans-serif;
+            color: #C3CBE0;
+            font-size: 15px;
+            font-weight: 600;
+            margin: 6px 0 14px 0;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def kpi_card(icon: str, label: str, value: str):
+    st.markdown(
+        f"""
+        <div class="kpi-card">
+            <div class="icon">{icon}</div>
+            <div class="label">{label}</div>
+            <div class="value">{value}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def coverage_bar(label: str, share: float, color: str):
+    st.markdown(
+        f"""
+        <div class="coverage-row">
+            <div class="coverage-label"><span>{label}</span><span>{share:.1f}%</span></div>
+            <div class="coverage-track">
+                <div class="coverage-fill" style="width:{share:.1f}%; background:{color};"></div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 # ── Сторінки ──────────────────────────────────────────────────────────────────
 def page_home(filtered_df: pd.DataFrame):
     st.title("🏢 HR Analytics Dashboard")
@@ -104,33 +242,80 @@ def page_home(filtered_df: pd.DataFrame):
 
 
 def page_metrics(df: pd.DataFrame, filtered_df: pd.DataFrame):
-    st.markdown("### 📊 Ключові показники")
+    inject_metrics_css()
 
-    c1, c2, c3, c4, c5, c6 = st.columns(6)
-    c1.metric("Кількість співробітників", len(filtered_df))
-    c2.metric("Середня базова зарплата", f"{filtered_df['base_salary'].mean():,.0f} грн")
-    c3.metric("Медіанна базова зарплата", f"{np.median(filtered_df['base_salary']):,.0f} грн")
-    c4.metric("Стандартне відхилення окладу", f"{filtered_df['base_salary'].std():,.0f} грн")
-    c5.metric("Середній бонус", f"{filtered_df['bonus'].mean():,.0f} грн")
-    c6.metric("Середній повний пакет", f"{filtered_df['total_compensation'].mean():,.0f} грн")
+    # ── Розрахунки ────────────────────────────────────────────────────────────
+    n = len(filtered_df)
+    avg_base = filtered_df["base_salary"].mean()
+    median_base = np.median(filtered_df["base_salary"])
+    std_base = filtered_df["base_salary"].std()
+    min_base = filtered_df["base_salary"].min()
+    max_base = filtered_df["base_salary"].max()
+    avg_bonus = filtered_df["bonus"].mean()
+    total_budget = filtered_df["total_compensation"].sum()
+    avg_total = filtered_df["total_compensation"].mean()
+    cv = std_base / avg_base * 100 if avg_base else 0
 
-    st.markdown("#### Додаткові показники")
-    c7, c8, c9, c10 = st.columns(4)
-    c7.metric("Мін. базова зарплата", f"{filtered_df['base_salary'].min():,.0f} грн")
-    c8.metric("Макс. базова зарплата", f"{filtered_df['base_salary'].max():,.0f} грн")
-    c9.metric("Загальний бюджет компенсацій", f"{filtered_df['total_compensation'].sum():,.0f} грн")
-    coef_var = (
-        filtered_df["base_salary"].std() / filtered_df["base_salary"].mean() * 100
-        if filtered_df["base_salary"].mean()
-        else 0
+    total_base_sum = filtered_df["base_salary"].sum()
+    total_bonus_sum = filtered_df["bonus"].sum()
+    total_benefits_sum = max(total_budget - total_base_sum - total_bonus_sum, 0)
+    base_pct = total_base_sum / total_budget * 100 if total_budget else 0
+    bonus_pct = total_bonus_sum / total_budget * 100 if total_budget else 0
+    benefits_pct = max(100 - base_pct - bonus_pct, 0)
+
+    # ── Hero: загальний бюджет + структура компенсації ─────────────────────────
+    st.markdown(
+        f"""
+        <div class="kpi-hero">
+            <div class="kpi-hero-label">Загальний бюджет компенсацій</div>
+            <div class="kpi-hero-value">{total_budget:,.0f} грн</div>
+            <div class="kpi-hero-sub">{n} співробітників · середній пакет {avg_total:,.0f} грн</div>
+            <div class="mix-bar">
+                <div class="mix-seg" style="width:{base_pct:.1f}%; background:#4F8CFF;"></div>
+                <div class="mix-seg" style="width:{bonus_pct:.1f}%; background:#34D399;"></div>
+                <div class="mix-seg" style="width:{benefits_pct:.1f}%; background:#FBBF24;"></div>
+            </div>
+            <div class="mix-legend">
+                <span><span class="mix-dot" style="background:#4F8CFF;"></span>Базова зарплата · {base_pct:.0f}%</span>
+                <span><span class="mix-dot" style="background:#34D399;"></span>Бонуси · {bonus_pct:.0f}%</span>
+                <span><span class="mix-dot" style="background:#FBBF24;"></span>Пільги · {benefits_pct:.0f}%</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-    c10.metric("Коефіцієнт варіації окладу", f"{coef_var:.1f}%")
 
-    st.markdown("#### Охоплення пільгами")
-    cols = st.columns(len(BENEFIT_COSTS))
-    for col_widget, (col_name, label) in zip(cols, BENEFIT_LABELS.items()):
+    # ── KPI картки ────────────────────────────────────────────────────────────
+    row1 = [
+        ("👥", "Співробітників", f"{n}"),
+        ("💰", "Середня база", f"{avg_base:,.0f} грн"),
+        ("📍", "Медіана бази", f"{median_base:,.0f} грн"),
+        ("📈", "Std. відхилення", f"{std_base:,.0f} грн"),
+    ]
+    row2 = [
+        ("⬇️", "Мінімум бази", f"{min_base:,.0f} грн"),
+        ("⬆️", "Максимум бази", f"{max_base:,.0f} грн"),
+        ("🎁", "Середній бонус", f"{avg_bonus:,.0f} грн"),
+        ("🎯", "Коеф. варіації", f"{cv:.1f}%"),
+    ]
+    for row in (row1, row2):
+        cols = st.columns(4)
+        for col, (icon, label, value) in zip(cols, row):
+            with col:
+                kpi_card(icon, label, value)
+
+    # ── Охоплення пільгами ───────────────────────────────────────────────────
+    st.markdown('<div class="section-title">Охоплення пільгами</div>', unsafe_allow_html=True)
+    coverage_colors = {
+        "health_insurance": "#34D399",
+        "sport": "#FBBF24",
+        "remote_allowance": "#38BDF8",
+    }
+    cov_cols = st.columns(3)
+    for col, (col_name, label) in zip(cov_cols, BENEFIT_LABELS.items()):
         share = (filtered_df[col_name] > 0).mean() * 100
-        col_widget.metric(f"Охоплення: {label}", f"{share:.1f}%")
+        with col:
+            coverage_bar(label, share, coverage_colors[col_name])
 
     st.divider()
     st.subheader("Таблиця даних")
@@ -276,13 +461,60 @@ def page_bonus_compensation(filtered_df: pd.DataFrame):
         )
 
 
-def page_gender(filtered_df: pd.DataFrame):
+def show_gender_gap(filtered_df: pd.DataFrame):
     st.markdown("### 👩‍🦰👨 Гендерна аналітика")
 
-    if "gender" not in filtered_df.columns:
-        st.warning("Дані про стать відсутні у файлі.")
+    # Шукаємо колонку гендеру (незалежно від регістру)
+    gender_col = next((c for c in filtered_df.columns if c.lower() == "gender"), None)
+    if gender_col is None:
+        st.warning("⚠️ Дані про стать відсутні.")
         return
 
+    df = filtered_df.copy()
+    df["gender"] = df[gender_col].astype(str).str.strip()
+
+    # Визначаємо унікальні значення
+    unique_genders = df["gender"].unique().tolist()
+
+    gender_stats = (
+        df.groupby("gender")["base_salary"]
+        .agg(["count", "mean", "median"])
+        .reset_index()
+    )
+
+    c1, c2, c3 = st.columns(3)
+    for i, g in enumerate(unique_genders[:2]):
+        val = gender_stats.loc[gender_stats["gender"] == g, "count"].values
+        [c1, c2][i].metric(f"Кількість: {g}", int(val[0]) if len(val) else 0)
+
+    if len(gender_stats) >= 2:
+        diff = gender_stats["mean"].max() - gender_stats["mean"].min()
+        c3.metric("Різниця середніх зарплат", f"{diff:,.0f} грн")
+
+    st.divider()
+
+    fig1 = px.bar(
+        gender_stats, x="gender", y="mean", color="gender",
+        title="Середня зарплата за гендером",
+        labels={"gender": "Гендер", "mean": "Середня зарплата, грн"},
+    )
+    st.plotly_chart(fig1, use_container_width=True)
+
+    fig2 = px.scatter(
+        df, x="base_salary", y="bonus",
+        size="total_compensation", color="gender",
+        title="Зарплата vs Бонус (розмір = повний пакет)",
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+
+    if "performance_score" in df.columns:
+        fig3 = px.box(
+            df, x="gender", y="performance_score", color="gender",
+            title="Розподіл Performance Score за гендером",
+        )
+        st.plotly_chart(fig3, use_container_width=True)
+
+    # KPI метрики
     gender_stats = (
         filtered_df.groupby("gender")["base_salary"]
         .agg(["count", "mean", "median"])
@@ -290,80 +522,43 @@ def page_gender(filtered_df: pd.DataFrame):
     )
 
     c1, c2, c3 = st.columns(3)
-    women_count = (
-        gender_stats.loc[gender_stats["gender"] == "Жінка", "count"].values[0]
-        if "Жінка" in gender_stats["gender"].values
-        else 0
+    c1.metric("Кількість жінок",
+              gender_stats.loc[gender_stats["gender"] == "Жінка", "count"].values[0]
+              if "Жінка" in gender_stats["gender"].values else 0)
+    c2.metric("Кількість чоловіків",
+              gender_stats.loc[gender_stats["gender"] == "Чоловік", "count"].values[0]
+              if "Чоловік" in gender_stats["gender"].values else 0)
+
+    if len(gender_stats) == 2:
+        diff = gender_stats.loc[gender_stats["gender"] == "Чоловік", "mean"].values[0] - \
+               gender_stats.loc[gender_stats["gender"] == "Жінка", "mean"].values[0]
+        c3.metric("Різниця середніх зарплат", f"{diff:,.0f} грн")
+
+    st.divider()
+
+    # Графік: середня зарплата за гендером
+    fig1 = px.bar(
+        gender_stats,
+        x="gender", y="mean", color="gender",
+        title="Середня зарплата за гендером",
+        labels={"gender": "Гендер", "mean": "Середня зарплата, грн"},
+        color_discrete_sequence=["#a64ca6", "#4c6ca6"]
     )
-    men_count = (
-        gender_stats.loc[gender_stats["gender"] == "Чоловік", "count"].values[0]
-        if "Чоловік" in gender_stats["gender"].values
-        else 0
-    )
-    c1.metric("Кількість жінок", women_count)
-    c2.metric("Кількість чоловіків", men_count)
-    if len(gender_stats) >= 2:
-        diff = gender_stats["mean"].max() - gender_stats["mean"].min()
-        c3.metric("Різниця середньої зарплати", f"{diff:,.0f} грн")
+    st.plotly_chart(fig1, use_container_width=True)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.plotly_chart(
-            px.bar(
-                gender_stats, x="mean", y="gender", orientation="h",
-                color="gender", title="Середня зарплата за статтю",
-                color_discrete_map={"Жінка": "purple", "Чоловік": "blue"},
-                labels={"mean": "Середня зарплата, грн", "gender": "Стать"},
-            ),
-            use_container_width=True,
-        )
-    with col2:
-        st.plotly_chart(
-            px.box(
-                filtered_df, x="gender", y="base_salary", color="gender",
-                title="Розподіл зарплат за статтю",
-                color_discrete_map={"Жінка": "purple", "Чоловік": "blue"},
-            ),
-            use_container_width=True,
-        )
+    # Графік: розподіл співробітників
+    st.subheader("📊 Розподіл співробітників за гендером")
+    st.bar_chart(filtered_df["gender"].value_counts())
 
-    st.plotly_chart(
-        px.scatter(
-            filtered_df, x="base_salary", y="bonus",
-            size="total_compensation", color="gender",
-            title="Зарплата vs Бонус (розмір = повний пакет)",
-            color_discrete_map={"Жінка": "purple", "Чоловік": "blue"},
-        ),
-        use_container_width=True,
-    )
+# --- Виклик у маршрутизації ---
+def page_gender(df):
+    st.title("👩‍💼 Гендерна аналітика")
+    role_col = "Role_ua"
+    selected_role = st.selectbox("Оберіть роль:", df[role_col].unique())
+    filtered_df = df[df[role_col] == selected_role]
+    show_gender_gap(filtered_df)
 
-
-def page_top(filtered_df: pd.DataFrame):
-    st.markdown("### 🏆 Рейтинг співробітників")
-    top_n = st.slider("Обрати кількість:", min_value=3, max_value=min(50, len(filtered_df)), value=10)
-    cols_to_show = [
-        c for c in [
-            "name", "department", "Role_ua", "base_salary", "bonus",
-            "health_insurance", "sport", "remote_allowance", "total_compensation",
-        ]
-        if c in filtered_df.columns
-    ]
-    top_df = filtered_df.sort_values("total_compensation", ascending=False).head(top_n)
-    st.dataframe(top_df[cols_to_show], use_container_width=True)
-
-    st.plotly_chart(
-        px.bar(
-            top_df.sort_values("total_compensation"),
-            x="total_compensation",
-            y="name" if "name" in top_df.columns else top_df.index.astype(str),
-            orientation="h",
-            color="department" if "department" in top_df.columns else None,
-            title=f"ТОП-{top_n} за повним компенсаційним пакетом",
-        ),
-        use_container_width=True,
-    )
-
-
+                    
 def page_market(filtered_df: pd.DataFrame, full_df: pd.DataFrame):
     st.markdown("### 📑 Аналіз ринку: внутрішня зарплата та ринкові дані")
 
@@ -420,11 +615,31 @@ def page_market(filtered_df: pd.DataFrame, full_df: pd.DataFrame):
         )
     else:
         st.info("Недостатньо даних для порівняння на цю посаду.")
+def page_top(filtered_df: pd.DataFrame):
+    st.markdown("### 🏆 Рейтинг співробітників")
+    st.markdown("ТОП співробітників за повним компенсаційним пакетом. Корисно для виявлення ключових талантів.")
 
+    top_n = st.slider("Кількість у рейтингу:", min_value=3, max_value=min(50, len(filtered_df)), value=10)
+
+    cols_to_show = [c for c in [
+        "name", "department", "Role_ua", "base_salary", "bonus",
+        "health_insurance", "sport", "remote_allowance",
+        "total_compensation", "performance_score"
+    ] if c in filtered_df.columns]
+
+    top_df = filtered_df.sort_values("total_compensation", ascending=False).head(top_n)
+    st.dataframe(top_df[cols_to_show], use_container_width=True)
+
+    if "performance_score" in filtered_df.columns:
+        st.markdown("#### Зв'язок performance_score та компенсації")
+        fig = px.scatter(
+            top_df, x="performance_score", y="total_compensation",
+            color="department", hover_data=["name", "Role_ua"],
+            title="Performance Score vs Повний пакет (ТОП співробітників)"
+        )
+        st.plotly_chart(fig, use_container_width=True)
 
 # ── Головна функція ───────────────────────────────────────────────────────────
-def main():
-    st.set_page_config(page_title="HR Analytics Dashboard", layout="wide")
 def main():
     st.set_page_config(page_title="HR Analytics Dashboard", layout="wide")
 
@@ -438,12 +653,11 @@ def main():
         unsafe_allow_html=True,
     )
 
-  
     # Завантаження та підготовка даних
     df = pd.read_csv("compensation.csv")
     df.columns = df.columns.str.strip()
     df = add_total_compensation(df)  # ← розраховуємо total_compensation
-
+  
     # Сайдбар: меню
     st.sidebar.title("Меню")
     page = st.sidebar.radio(
@@ -509,7 +723,7 @@ def main():
     elif page == "Аналіз бонусів та компенсацій":
         page_bonus_compensation(filtered_df)
     elif page == "Гендерна аналітика":
-        page_gender(filtered_df)
+        show_gender_gap(filtered_df)
     elif page == "Рейтинг співробітників":
         page_top(filtered_df)
     elif page == "Аналіз ринку":
