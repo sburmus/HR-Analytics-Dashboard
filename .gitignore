@@ -1,2 +1,5 @@
-
-__pycache__/parser.cpython-314.pyc
+_.venv/
+venv/
+__pycache__/
+*.pyc
+.streamlit/secrets.toml
