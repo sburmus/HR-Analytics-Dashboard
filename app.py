@@ -202,43 +202,105 @@ def coverage_bar(label: str, share: float, color: str):
 
 
 # ── Сторінки ──────────────────────────────────────────────────────────────────
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
 def page_home(filtered_df: pd.DataFrame):
-    st.title("🏢 HR Analytics Dashboard")
-    st.subheader("Compensation & Benefits")
+    # CSS для вкладок
     st.markdown(
-        "Система призначена для аналізу зарплат, бонусів, компенсацій та пільг співробітників."
+        """
+        <style>
+        /* Збільшення шрифту у вкладках */
+        .stTabs [data-baseweb="tab"] {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        /* Активна вкладка */
+        .stTabs [data-baseweb="tab"][aria-selected="true"] {
+            color: #4CAF50;
+            border-bottom: 3px solid #4CAF50;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
     )
+
+    # Великий заголовок по центру
+    st.markdown(
+        "<h1 style='text-align:center; font-size:48px;'>🏢 HR Analytics Dashboard</h1>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        "<h3 style='text-align:center; font-size:24px; color:gray;'>💰 Salary • 🎁 Compensation • 💎 Benefits</h3>",
+        unsafe_allow_html=True,
+    )
+
+    st.success(
+        """
+        👋 Ласкаво просимо!  
+        Це сучасний HR Dashboard для аналізу зарплат, бонусів та пільг співробітників.  
+        Використовуйте меню та фільтри зліва, щоб отримати індивідуальні зрізи даних.
+        """
+    )
+
     st.divider()
 
+    # Метрики
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("👥 Співробітників", len(filtered_df))
     c2.metric("💰 Середня зарплата", f"{filtered_df['base_salary'].mean():,.0f} грн")
     c3.metric("🎁 Середній бонус", f"{filtered_df['bonus'].mean():,.0f} грн")
-    c4.metric(
-        "💎 Середній повний пакет",
-        f"{filtered_df['total_compensation'].mean():,.0f} грн",
-    )
+    c4.metric("💎 Повний пакет", f"{filtered_df['total_compensation'].mean():,.0f} грн")
 
     st.divider()
 
-    left, right = st.columns(2)
-    with left:
-        st.success("### 📊 Ключові показники\n- Аналіз зарплат\n- Медіана\n- Бюджет компенсацій")
-        st.info("### 🎁 Бонуси та пільги\n- Аналіз бонусів\n- Медстрахування\n- Спорт\n- Remote")
-        st.warning("### 👩‍🦰👨 Гендерна аналітика\n- Середня зарплата\n- Бонуси\n- Гендерний розрив")
-    with right:
-        st.success("### 🏆 Рейтинг співробітників\n- ТОП працівників\n- Повний пакет")
-        st.info("### 📈 Аналіз ринку\n- Work.ua/DOU\n- Власні дослідження\n- Конкурентність")
+    # Вкладки
+    tab1, tab2, tab3 = st.tabs(["📊 Основні можливості", "🏆 Для HR", "📌 Структура компанії"])
+
+    with tab1:
+        st.markdown(
+            """
+            ### 📊 Основні можливості
+            Тут ви знайдете ключові інструменти для аналізу:
+            - Зарплат та бонусів
+            - Гендерної аналітики
+            - Порівняння внутрішніх даних із ринком
+            """,
+            unsafe_allow_html=True
+        )
+        
+        
+
+    with tab2:
+        st.markdown(
+            """
+            ### 🏆 Для HR та менеджерів
+            Цей розділ допомагає:
+            - Виявляти ключових талантів
+            - Оцінювати конкурентоспроможність компанії
+            - Приймати стратегічні рішення на основі даних
+            """,
+            unsafe_allow_html=True
+        )
+
+    with tab3:
+        st.markdown(
+            """
+            ### 📌 Структура компанії
+            Візуалізація розподілу співробітників по відділах.
+            Це допомагає зрозуміти баланс ресурсів та структуру організації.
+            """,
+            unsafe_allow_html=True
+        )
+        dept_count = filtered_df["department"].value_counts().reset_index()
+        dept_count.columns = ["department", "count"]
+        fig = px.pie(dept_count, names="department", values="count", title="Структура компанії")
+        st.plotly_chart(fig, use_container_width=True)
 
     st.divider()
-    st.subheader("📌 Розподіл співробітників по відділах")
-    dept_count = filtered_df["department"].value_counts().reset_index()
-    dept_count.columns = ["department", "count"]
-    fig = px.pie(dept_count, names="department", values="count", title="Структура компанії")
-    st.plotly_chart(fig, width="stretch")
+  
 
-    st.divider()
-    st.success("👈 Використовуйте меню та фільтри зліва для переходу між розділами.")
 
 
 def page_metrics(df: pd.DataFrame, filtered_df: pd.DataFrame):
@@ -711,7 +773,7 @@ def page_market(filtered_df: pd.DataFrame, full_df: pd.DataFrame):
     if source_option == "Власне дослідження":
         custom_df = generate_random_market_research()
         with st.expander("📋 Дані власного дослідження"):
-            st.dataframe(custom_df,width=True)
+            st.dataframe(custom_df,width='stretch')
         row = custom_df.loc[custom_df["Role"] == selected_role]
         if not row.empty:
             market_salary = float(row["Market_Salary"].values[0])
@@ -757,7 +819,7 @@ def page_market(filtered_df: pd.DataFrame, full_df: pd.DataFrame):
             title={"text": f"{selected_role}<br><span style='font-size:13px;color:gray'>ринок = 100%</span>"},
         ))
         fig_gauge.update_layout(height=320, margin=dict(t=60, b=20, l=30, r=30))
-        st.plotly_chart(fig_gauge, width=True)
+        st.plotly_chart(fig_gauge, width='stretch')
 
     with right:
         st.markdown("#### Внутрішня зарплата vs Ринок")
@@ -773,7 +835,7 @@ def page_market(filtered_df: pd.DataFrame, full_df: pd.DataFrame):
         fig_bar.update_layout(height=320, yaxis_title="Зарплата, грн",
                               showlegend=False, margin=dict(t=40, b=20),
                               plot_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig_bar, width=True)
+        st.plotly_chart(fig_bar, width='stretch')
 
     st.divider()
 
@@ -801,7 +863,7 @@ def page_market(filtered_df: pd.DataFrame, full_df: pd.DataFrame):
         )
         fig_roles.update_layout(height=380, margin=dict(t=20, b=20), coloraxis_showscale=False)
         fig_roles.add_vline(x=0, line_dash="dash", line_color="gray", opacity=0.5)
-        st.plotly_chart(fig_roles, width=True)
+        st.plotly_chart(fig_roles, width='stretch')
 
     with right2:
         st.markdown(f"#### Розподіл зарплат: {selected_role}")
@@ -813,7 +875,7 @@ def page_market(filtered_df: pd.DataFrame, full_df: pd.DataFrame):
         fig_hist.add_vline(x=market_salary, line_dash="dash", line_color="#FBBF24", line_width=2,
                            annotation_text=f"Ринок: {market_salary:,.0f}", annotation_position="top left")
         fig_hist.update_layout(height=380, margin=dict(t=20, b=20), plot_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig_hist, width=True)
+        st.plotly_chart(fig_hist, width='stretch')
 
     st.divider()
     if diff >= 10:
@@ -937,6 +999,7 @@ def main():
         page_top(filtered_df)
     elif page == "Аналіз ринку":
         page_market(filtered_df, df)
+
 
 
 if __name__ == "__main__":
