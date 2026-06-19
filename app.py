@@ -235,7 +235,7 @@ def page_home(filtered_df: pd.DataFrame):
     dept_count = filtered_df["department"].value_counts().reset_index()
     dept_count.columns = ["department", "count"]
     fig = px.pie(dept_count, names="department", values="count", title="Структура компанії")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     st.divider()
     st.success("👈 Використовуйте меню та фільтри зліва для переходу між розділами.")
@@ -319,7 +319,7 @@ def page_metrics(df: pd.DataFrame, filtered_df: pd.DataFrame):
 
     st.divider()
     st.subheader("Таблиця даних")
-    st.dataframe(filtered_df, use_container_width=True)
+    st.dataframe(filtered_df, width="stretch")
 
     col_csv, col_xlsx = st.columns(2)
     col_csv.download_button(
@@ -379,7 +379,7 @@ def page_bonus_compensation(filtered_df: pd.DataFrame):
             fig1.update_traces(textposition="outside")
             fig1.update_layout(height=350, coloraxis_showscale=False,
                                margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
-            st.plotly_chart(fig1, use_container_width=True)
+            st.plotly_chart(fig1, width="stretch")
 
         with right:
             st.markdown("#### Розподіл бонусів")
@@ -389,7 +389,7 @@ def page_bonus_compensation(filtered_df: pd.DataFrame):
             fig2.add_vline(x=avg_bonus, line_dash="dash", line_color="#34D399", line_width=2,
                            annotation_text=f"Середній: {avg_bonus:,.0f}", annotation_position="top right")
             fig2.update_layout(height=350, margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width="stretch")
 
         st.divider()
 
@@ -404,7 +404,7 @@ def page_bonus_compensation(filtered_df: pd.DataFrame):
             fig3.update_traces(textposition="outside")
             fig3.update_layout(height=350, coloraxis_showscale=False,
                                margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
-            st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, width="stretch")
 
         with right2:
             st.markdown("#### Частка співробітників з бонусом по відділах")
@@ -418,7 +418,7 @@ def page_bonus_compensation(filtered_df: pd.DataFrame):
             fig4.update_traces(textposition="outside")
             fig4.update_layout(height=350, coloraxis_showscale=False,
                                margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
-            st.plotly_chart(fig4, use_container_width=True)
+            st.plotly_chart(fig4, width="stretch")
 
         st.info("💡 **Висновок:** високий середній бонус та широке охоплення свідчать про розвинену систему мотивації.")
 
@@ -458,7 +458,7 @@ def page_bonus_compensation(filtered_df: pd.DataFrame):
                                       y=merged[col] * BENEFIT_COSTS[col], marker_color=color))
             fig5.update_layout(barmode="stack", height=380, margin=dict(t=10, b=10),
                                plot_bgcolor="rgba(0,0,0,0)", yaxis_title="грн")
-            st.plotly_chart(fig5, use_container_width=True)
+            st.plotly_chart(fig5, width="stretch")
 
         with right:
             st.markdown("#### База vs Повний пакет")
@@ -469,7 +469,7 @@ def page_bonus_compensation(filtered_df: pd.DataFrame):
                                   y=dept_comp["total_compensation"], marker_color="#34D399"))
             fig6.update_layout(barmode="group", height=380, margin=dict(t=10, b=10),
                                plot_bgcolor="rgba(0,0,0,0)", yaxis_title="грн")
-            st.plotly_chart(fig6, use_container_width=True)
+            st.plotly_chart(fig6, width="stretch")
 
         st.divider()
 
@@ -480,14 +480,14 @@ def page_bonus_compensation(filtered_df: pd.DataFrame):
                               size="total_compensation", color="department",
                               labels={"base_salary": "Середня база, грн", "bonus": "Середній бонус, грн"})
             fig7.update_layout(height=350, margin=dict(t=10, b=10))
-            st.plotly_chart(fig7, use_container_width=True)
+            st.plotly_chart(fig7, width="stretch")
 
         with right2:
             st.markdown("#### Частка компенсацій по відділах")
             fig8 = px.pie(dept_comp, names="department", values="total_compensation",
                           color_discrete_sequence=px.colors.qualitative.Pastel, hole=0.4)
             fig8.update_layout(height=350, margin=dict(t=10, b=10))
-            st.plotly_chart(fig8, use_container_width=True)
+            st.plotly_chart(fig8, width="stretch")
 
         st.info("💡 **Висновок:** stacked графік показує реальну структуру витрат на кожного співробітника по відділах.")
 
@@ -519,14 +519,14 @@ def page_bonus_compensation(filtered_df: pd.DataFrame):
             fig9.update_traces(textposition="outside")
             fig9.update_layout(height=320, showlegend=False,
                                margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
-            st.plotly_chart(fig9, use_container_width=True)
+            st.plotly_chart(fig9, width="stretch")
 
         with right:
             st.markdown("#### Розподіл витрат на пільги")
             fig10 = px.pie(adoption, names="Пільга", values="Витрати компанії, грн",
                            color_discrete_sequence=["#34D399", "#FBBF24", "#38BDF8"], hole=0.4)
             fig10.update_layout(height=320, margin=dict(t=10, b=10))
-            st.plotly_chart(fig10, use_container_width=True)
+            st.plotly_chart(fig10, width="stretch")
 
         st.divider()
         st.markdown("#### Охоплення пільгами по відділах")
@@ -538,9 +538,9 @@ def page_bonus_compensation(filtered_df: pd.DataFrame):
                        color_discrete_sequence=["#34D399", "#FBBF24", "#38BDF8"],
                        labels={"department": "Відділ"})
         fig11.update_layout(height=360, margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig11, use_container_width=True)
+        st.plotly_chart(fig11, width="stretch")
 
-        st.dataframe(adoption, use_container_width=True)
+        st.dataframe(adoption, width="stretch")
         st.info("💡 **Висновок:** нерівномірне охоплення між відділами може бути сигналом для HR-перегляду політики компенсацій.")
 
 def show_gender_gap(filtered_df: pd.DataFrame):
@@ -590,7 +590,7 @@ def show_gender_gap(filtered_df: pd.DataFrame):
         fig1.update_traces(textposition="outside")
         fig1.update_layout(height=340, showlegend=False,
                            margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig1, width="stretch")
 
     with right:
         st.markdown("#### Розподіл зарплат (violin)")
@@ -600,7 +600,7 @@ def show_gender_gap(filtered_df: pd.DataFrame):
                          labels={"gender": "", "base_salary": "Базова зарплата, грн"})
         fig2.update_layout(height=340, showlegend=False,
                            margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width="stretch")
 
     st.divider()
 
@@ -615,7 +615,7 @@ def show_gender_gap(filtered_df: pd.DataFrame):
                                   "bonus": "Бонус, грн", "gender": "Гендер"},
                           hover_data=["department"] if "department" in df.columns else None)
         fig3.update_layout(height=360, margin=dict(t=10, b=10))
-        st.plotly_chart(fig3, use_container_width=True)
+        st.plotly_chart(fig3, width="stretch")
 
     with right2:
         st.markdown("#### Середній бонус за гендером")
@@ -627,7 +627,7 @@ def show_gender_gap(filtered_df: pd.DataFrame):
         fig4.update_traces(textposition="outside")
         fig4.update_layout(height=360, showlegend=False,
                            margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig4, use_container_width=True)
+        st.plotly_chart(fig4, width="stretch")
 
     st.divider()
 
@@ -641,7 +641,7 @@ def show_gender_gap(filtered_df: pd.DataFrame):
                           color_discrete_sequence=["#a855f7", "#3b82f6"],
                           labels={"department": "Відділ", "count": "К-сть", "gender": "Гендер"})
             fig5.update_layout(height=360, margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
-            st.plotly_chart(fig5, use_container_width=True)
+            st.plotly_chart(fig5, width="stretch")
 
     with right3:
         st.markdown("#### Performance Score за гендером")
@@ -650,7 +650,7 @@ def show_gender_gap(filtered_df: pd.DataFrame):
                       labels={"gender": "", "performance_score": "Performance Score"})
         fig6.update_layout(height=360, showlegend=False,
                            margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig6, use_container_width=True)
+        st.plotly_chart(fig6, width="stretch")
 
     st.divider()
 
@@ -665,7 +665,7 @@ def show_gender_gap(filtered_df: pd.DataFrame):
                       labels={"department": "Відділ", "base_salary": "Середня зарплата, грн", "gender": "Гендер"})
         fig7.update_traces(textposition="outside")
         fig7.update_layout(height=400, margin=dict(t=10, b=10), plot_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig7, use_container_width=True)
+        st.plotly_chart(fig7, width="stretch")
 
     st.divider()
 
@@ -837,7 +837,7 @@ def page_top(filtered_df: pd.DataFrame):
     ] if c in filtered_df.columns]
 
     top_df = filtered_df.sort_values("total_compensation", ascending=False).head(top_n)
-    st.dataframe(top_df[cols_to_show], use_container_width=True)
+    st.dataframe(top_df[cols_to_show], width="stretch")
 
     if "performance_score" in filtered_df.columns:
         st.markdown("#### Зв'язок performance_score та компенсації")
@@ -846,7 +846,7 @@ def page_top(filtered_df: pd.DataFrame):
             color="department", hover_data=["name", "Role_ua"],
             title="Performance Score vs Повний пакет (ТОП співробітників)"
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
 # ── Головна функція ───────────────────────────────────────────────────────────
 def main():
