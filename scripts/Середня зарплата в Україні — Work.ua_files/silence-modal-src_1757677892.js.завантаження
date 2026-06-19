@@ -1,0 +1,116 @@
+$(document).ready(function () {
+    // перевірка, чи браузер реально підтримує Europe/Kyiv
+    function isKyivTimeSupported() {
+        const timeZones = ["Europe/Kyiv", "Europe/Kiev"];
+        for (const tz of timeZones) {
+            try {
+                const fmt = new Intl.DateTimeFormat("en-US", {
+                    timeZone: tz,
+                    hour: "2-digit"
+                });
+                const parts = fmt.formatToParts(new Date());
+                if (parts.some(p => p.type === "hour")) {
+                    return true;
+                }
+            } catch (e) {
+                continue;
+            }
+        }
+        return false;
+    }
+
+    if ($('#showSilenceModal').length && isKyivTimeSupported()) {
+        let allowClose = false;
+        let isAlertOpen = false;
+
+        function getKyivTime() {
+            try {
+                return new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Kyiv" }));
+            } catch (e) {
+                return new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Kiev" }));
+            }
+        }
+
+        function getKyivTimeAt(hour, minute, second = 0) {
+            const kyivNow = getKyivTime();
+            const kyivTimeAt = new Date(
+                kyivNow.getFullYear(),
+                kyivNow.getMonth(),
+                kyivNow.getDate(),
+                hour,
+                minute,
+                second
+            );
+            return kyivTimeAt.getTime();
+        }
+
+        function formatTime(number) {
+            return number.toString().padStart(2, '0');
+        }
+
+        function countdown(hideTime) {
+            const interval = setInterval(function () {
+                const currentTime = getKyivTime();
+
+                if (currentTime >= hideTime) {
+                    document.getElementById("silenceCounter").innerHTML = "00:00";
+                    clearInterval(interval);
+                    return;
+                }
+
+                const timeDiffInSeconds = Math.floor((hideTime - currentTime) / 1000);
+                const minutes = Math.floor(timeDiffInSeconds / 60);
+                const seconds = timeDiffInSeconds % 60;
+
+                document.getElementById("silenceCounter").innerHTML =
+                    formatTime(minutes) + ":" + formatTime(seconds);
+            }, 1000);
+        }
+
+        function showModal(hideTime) {
+            countdown(hideTime);
+            setTimeout(function () {
+                $('#showSilenceModal').modal({ show: true });
+            }, 1000);
+            const timeToHide = hideTime - Date.now();
+            if (timeToHide > 0) {
+                setTimeout(hideModal, timeToHide);
+            } else {
+                hideModal();
+            }
+        }
+
+        function hideModal() {
+            allowClose = true;
+            $('#showSilenceModal').modal('hide');
+        }
+
+        $('#showSilenceModal').on('hide.bs.modal', function (e) {
+            if (!allowClose) {
+                e.preventDefault();
+                if (isAlertOpen) return;
+                isAlertOpen = true;
+                $('.js-modal-silence-alert').addClass('is-open');
+                setTimeout(function () {
+                    $('.js-modal-silence-alert').removeClass('is-open');
+                    isAlertOpen = false;
+                }, 2500);
+            }
+        });
+
+        function checkAndScheduleModal() {
+            const showTime = getKyivTimeAt(8, 59, 59); // Запуск за секуду до 9:00 щоб таймер встиг ініціалізуватись рівно о 9 ранку
+            const hideTime = getKyivTimeAt(9, 1, 0); // Закінчення о 9:01
+            const now = Date.now();
+
+            if (now >= showTime && now < hideTime) {
+                showModal(hideTime);
+            } else {
+                const timeToShow = showTime > now ? showTime - now : showTime + 24 * 60 * 60 * 1000 - now;
+                setTimeout(checkAndScheduleModal, timeToShow);
+            }
+        }
+
+        checkAndScheduleModal();
+    }
+});
