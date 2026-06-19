@@ -39,7 +39,7 @@ def main():
     if source_option == "Власне дослідження":
         custom_df = generate_random_market_research()
         with st.expander("📋 Дані власного дослідження"):
-            st.dataframe(custom_df, use_container_width=True)
+            st.dataframe(custom_df, width="stretch")
         row = custom_df.loc[custom_df["Role"] == selected_role]
         if not row.empty:
             market_salary = float(row["Market_Salary"].values[0])
@@ -89,7 +89,7 @@ def main():
             title={"text": f"{selected_role}<br><span style='font-size:13px;color:gray'>ринок = 100%</span>"},
         ))
         fig_gauge.update_layout(height=320, margin=dict(t=60, b=20, l=30, r=30))
-        st.plotly_chart(fig_gauge, use_container_width=True)
+        st.plotly_chart(fig_gauge, width="stretch")
 
     with right:
         st.markdown("#### Внутрішня зарплата vs Ринок")
@@ -107,7 +107,7 @@ def main():
             showlegend=False, margin=dict(t=40, b=20),
             plot_bgcolor="rgba(0,0,0,0)",
         )
-        st.plotly_chart(fig_bar, use_container_width=True)
+        st.plotly_chart(fig_bar, width="stretch")
 
     st.divider()
 
@@ -133,7 +133,7 @@ def main():
         )
         fig_roles.update_layout(height=380, margin=dict(t=20, b=20), coloraxis_showscale=False)
         fig_roles.add_vline(x=0, line_dash="dash", line_color="gray", opacity=0.5)
-        st.plotly_chart(fig_roles, use_container_width=True)
+        st.plotly_chart(fig_roles, width="stretch")
 
     with right2:
         st.markdown(f"#### Розподіл зарплат: {selected_role}")
@@ -147,7 +147,7 @@ def main():
         fig_hist.add_vline(x=market_salary, line_dash="dash", line_color="#FBBF24", line_width=2,
                            annotation_text=f"Ринок: {market_salary:,.0f}", annotation_position="top left")
         fig_hist.update_layout(height=380, margin=dict(t=20, b=20), plot_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig_hist, use_container_width=True)
+        st.plotly_chart(fig_hist, width="stretch")
 
     st.divider()
 
