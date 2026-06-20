@@ -9,7 +9,11 @@ import plotly.graph_objects as go
 import seaborn as sns
 import matplotlib.pyplot as plt
 from io import BytesIO
-import os
+import asyncio
+import sys
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 #""" # ── Динамічний імпорт parser.py ──────────────────────────────────────────────
 #module_path = Path(__file__).parent / "parsers" / "parser.py"
@@ -296,7 +300,7 @@ def page_home(filtered_df: pd.DataFrame):
         dept_count = filtered_df["department"].value_counts().reset_index()
         dept_count.columns = ["department", "count"]
         fig = px.pie(dept_count, names="department", values="count", title="Структура компанії")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     st.divider()
   
