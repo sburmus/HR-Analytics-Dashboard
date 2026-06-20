@@ -1,6 +1,6 @@
-import importlib.util
-import sys
-from pathlib import Path
+#import importlib.util
+#import sys
+#from pathlib import Path
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -10,14 +10,14 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from io import BytesIO
 
-# ── Динамічний імпорт parser.py ──────────────────────────────────────────────
-module_path = Path(__file__).parent / "parsers" / "parser.py"
-spec = importlib.util.spec_from_file_location("parser", str(module_path))
-parser = importlib.util.module_from_spec(spec)
-sys.modules["parser"] = parser
-spec.loader.exec_module(parser)
-get_market_data = parser.get_market_data
-generate_random_market_research = parser.generate_random_market_research
+#""" # ── Динамічний імпорт parser.py ──────────────────────────────────────────────
+#module_path = Path(__file__).parent / "parsers" / "parser.py"
+#spec = importlib.util.spec_from_file_location("parser", str(module_path))
+#parser = importlib.util.module_from_spec(spec)
+#sys.modules["parser"] = parser
+#spec.loader.exec_module(parser)
+#get_market_data = parser.get_market_data
+#generate_random_market_research = parser.generate_random_market_research """
 
 # ── Вартість пільг (грн) ─────────────────────────────────────────────────────
 BENEFIT_COSTS = {
