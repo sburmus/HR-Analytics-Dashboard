@@ -1,5 +1,5 @@
 #import importlib.util
-#import sys
+import sys
 #from pathlib import Path
 import streamlit as st
 import pandas as pd
@@ -9,6 +9,7 @@ import plotly.graph_objects as go
 import seaborn as sns
 import matplotlib.pyplot as plt
 from io import BytesIO
+import os
 
 #""" # ── Динамічний імпорт parser.py ──────────────────────────────────────────────
 #module_path = Path(__file__).parent / "parsers" / "parser.py"
@@ -769,7 +770,45 @@ def page_market(filtered_df: pd.DataFrame, full_df: pd.DataFrame):
     st.title("📑 Аналіз ринку")
     st.markdown("Порівняння внутрішніх зарплат з реальними ринковими даними з трьох джерел.")
     st.divider()
+# ── Оновлення ринкових даних прямо з інтерфейсу ──────────────────────────
+    with st.expander("🔄 Оновити ринкові дані"):
+        st.caption(
+            "Запускає всі три парсери та перезаписує CSV-файли в market_data/. "
+            "Може зайняти кілька хвилин залежно від швидкості інтернету."
+        )
+        if st.button("Оновити зараз", key="update_market_btn"):
+            import subprocess
 
+            parser_files = [
+                ("Work.ua", "parsers/work_parser.py"),
+                ("Служба зайнятості", "parsers/parser_SZU.py"),
+                ("Jooble", "parsers/jooble_parser.py"),
+            ]
+            progress = st.progress(0)
+            status = st.empty()
+
+            for i, (name, path) in enumerate(parser_files):
+                status.info(f"Оновлюю: {name}...")
+                import os
+                env = os.environ.copy()
+                env["PYTHONIOENCODING"] = "utf-8"
+
+                result = subprocess.run(
+                    [sys.executable, path],
+                    capture_output=True, text=True,
+                    encoding="utf-8", errors="replace",
+                    env=env,
+                )
+                if result.returncode != 0:
+                    st.error(f"❌ Помилка при оновленні «{name}»:\n```\n{result.stderr[:500]}\n```")
+                else:
+                    st.success(f"✅ {name} оновлено")
+                progress.progress((i + 1) / len(parser_files))
+
+            st.cache_data.clear()
+            status.success("Готово! Перезавантажую сторінку...")
+            st.rerun()
+                                  
     if "Role_ua" not in full_df.columns:
         st.warning("Колонка 'Role_ua' відсутня.")
         return
